@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "评论",
+  "enablePullDownRefresh": false,
+  "usingComponents": {
+    "uni-load-more": "/uni_modules/uni-load-more/components/uni-load-more/uni-load-more",
+    "zhuige-reply": "/components/zhuige-reply",
+    "zhuige-nodata": "/components/zhuige-nodata"
+  }
+}

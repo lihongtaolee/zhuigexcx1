@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "用户搜索",
+  "enablePullDownRefresh": false,
+  "usingComponents": {
+    "uni-load-more": "/uni_modules/uni-load-more/components/uni-load-more/uni-load-more",
+    "zhuige-tab": "/components/zhuige-tab",
+    "zhuige-nodata": "/components/zhuige-nodata"
+  }
+}

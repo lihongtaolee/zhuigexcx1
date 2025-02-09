@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "通知",
+  "enablePullDownRefresh": false,
+  "usingComponents": {
+    "uni-badge": "/uni_modules/uni-badge/components/uni-badge/uni-badge",
+    "uni-load-more": "/uni_modules/uni-load-more/components/uni-load-more/uni-load-more",
+    "zhuige-nodata": "/components/zhuige-nodata"
+  }
+}
