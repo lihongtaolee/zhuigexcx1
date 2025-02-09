@@ -16,8 +16,8 @@ function zhuige_xcx_bbs_create_custom_post_type()
      */
     $zhuige_bbs_forum_labels = array(
         'name'               => '追格圈子',
-        'singular_name'      => '追格圈子',
-        'add_new'            => '新建圈子',
+        'singular_name'      => '追格圈子', 'post type 单个 item 时的名称，因为英文有复数',
+        'add_new'            => '新建圈子', '添加新内容的链接名称',
         'add_new_item'       => '新建一个圈子',
         'edit_item'          => '编辑圈子',
         'new_item'           => '新圈子',
@@ -33,12 +33,10 @@ function zhuige_xcx_bbs_create_custom_post_type()
         'labels'        => $zhuige_bbs_forum_labels,
         'description'   => '我们网站的圈子信息',
         'public'        => true,
-        'show_in_menu'  => true,
-        'menu_position' => 5,
-        'supports'      => array('title', 'editor', 'author', 'thumbnail'),
-        'has_archive'   => true,
-        'rewrite'       => array('slug' => 'forum', 'with_front' => true),
-        'show_in_rest'  => true
+        // 'show_in_menu'  => 'custompage',
+        // 'menu_position' => 5,
+        'supports'      => array('title', 'editor', 'author'),
+        'has_archive'   => true
     );
     register_post_type('zhuige_bbs_forum', $zhuige_bbs_forum_args);
 
@@ -74,36 +72,22 @@ function zhuige_xcx_bbs_create_custom_post_type()
         array(
             'id'      => 'logo',
             'type'    => 'media',
-            'title'   => '圈子LOGO',
+            'title'   => 'LOGO',
             'library' => 'image',
-            'after'   => '请上传圈子LOGO图片',
         ),
 
         array(
             'id'      => 'background',
             'type'    => 'media',
-            'title'   => '圈子封面',
+            'title'   => '头部背景',
             'library' => 'image',
-            'after'   => '请上传圈子封面图片',
-        ),
-
-        array(
-            'id'          => 'forum_cat',
-            'type'        => 'select',
-            'title'       => '圈子分类',
-            'placeholder' => '选择分类',
-            'options'     => 'categories',
-            'query_args'  => array(
-                'taxonomy'  => 'zhuige_bbs_forum_cat',
-            ),
-            'after'       => '请选择圈子所属分类',
         ),
 
         array(
             'id'    => 'notice',
             'type'  => 'textarea',
-            'title' => '圈子公告',
-            'subtitle' => '简单介绍一下圈子吧',
+            'title' => '公告',
+            'subtitle' => '',
         ),
 
         array(
@@ -533,6 +517,6 @@ function zhuige_xcx_bbs_create_custom_post_type()
     ));
 }
 
-ZhuiGe_Xcx::$post_types[] = ['id' => 'zhuige_bbs_forum', 'name' => '圈子', 'link' => '/pages/bbs/forum/forum'];
+// ZhuiGe_Xcx::$post_types[] = ['id' => 'zhuige_bbs_forum', 'name' => '圈子', 'link' => '/pages/bbs/forum/forum'];
 ZhuiGe_Xcx::$post_types[] = ['id' => 'zhuige_bbs_topic', 'name' => '帖子', 'link' => '/pages/bbs/detail/detail'];
 add_action('init', 'zhuige_xcx_bbs_create_custom_post_type');
