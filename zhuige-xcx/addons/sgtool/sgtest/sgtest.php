@@ -8,7 +8,7 @@ add_action('rest_api_init', function() {
 });
 
 /**
- * Plugin Name:     sgtool
+ * Plugin Name:     sgtool  **（注意：这里 Plugin Name 仍然是 sgtool，因为这是一个 addon 模块）**
  * Plugin URI:      https://erquhealth.com/
  * Description:     身高预测工具
  * Version:         1.0.0
@@ -24,17 +24,9 @@ if (!defined('WPINC')) {
 }
 
 
-function activate_zhuige_xcx() // 修改函数名
-{
-    require_once JIANG_QIE_API_BASE_DIR . 'includes/class-zhuige-xcx-activator.php';
-    JiangQie_API_Activator::activate();
-    // 创建身高预测表
-    create_height_predictions_table();
-}
-
 // REST API 接口
 add_action('rest_api_init', function () {
-    register_rest_route('zhuige-xcx/v1', '/save-height', array( // 修改路由名称
+    register_rest_route('zhuige-xcx/v1', '/save-height', array(
         'methods' => 'POST',
         'callback' => 'save_height_data',
         'permission_callback' => '__return_true'
@@ -49,7 +41,7 @@ function save_height_data(WP_REST_Request $request) {
     $table_exists = $wpdb->get_var("SHOW TABLES LIKE '$table_name'") === $table_name;
     if (!$table_exists) {
         error_log('Height Prediction - Table does not exist, creating...');
-        create_height_predictions_table();
+        create_height_predictions_table(); //  可以保留在这里，或者移动到主插件激活钩子，根据您的选择
     }
 
     // 检查表结构
@@ -132,7 +124,7 @@ function save_height_data(WP_REST_Request $request) {
     return $response_data;
 }
 
-// 创建数据库表
+// 创建数据库表 (注意：如果您选择将 create_height_predictions_table() 放在这里，那么sgtest.php需要独立运行时，会尝试创建表。 如果放在主插件激活函数中，则只需要在主插件激活时创建一次)
 function create_height_predictions_table() {
     global $wpdb;
     $table_name = $wpdb->prefix . 'height_predictions';
@@ -162,23 +154,23 @@ function create_height_predictions_table() {
     }
 }
 
-// 后台管理菜单
-add_action('admin_menu', 'zhuige_xcx_menu'); // 修改菜单函数名
 
-function zhuige_xcx_menu() { // 修改菜单函数名
+// 后台管理菜单 (保留在 sgtest.php 中)
+add_action('admin_menu', 'zhuige_xcx_menu'); //  使用 zhuige_xcx_menu 前缀
+
+function zhuige_xcx_menu() { // 使用 zhuige_xcx_menu 前缀
     add_menu_page(
         '身高预测数据',
         '身高预测',
         'manage_options',
-        'zhuige-height-data', // 修改 menu_slug
-        'zhuige_xcx_height_data_page', // 修改 function_name
+        'zhuige-height-data', // 使用 zhuige-height-data menu_slug
+        'zhuige_xcx_height_data_page', // 使用 zhuige_xcx_height_data_page 函数名
         'dashicons-chart-line',
         25
     );
 }
 
-// 修改后台显示部分的代码
-function zhuige_xcx_height_data_page() { // 修改 function_name
+function zhuige_xcx_height_data_page() { // 使用 zhuige_xcx_height_data_page 函数名
     if (!current_user_can('manage_options')) {
         wp_die(__('您没有足够的权限访问此页面。'));
     }
@@ -244,7 +236,7 @@ function zhuige_xcx_height_data_page() { // 修改 function_name
         echo '<td>' . number_format($boy_height, 1) . '</td>';
         echo '<td>' . number_format($girl_height, 1) . '</td>';
         echo '<td>' . date('Y-m-d H:i', strtotime($row->created_at)) . '</td>';
-        echo '<td><a href="?page=zhuige-height-data&action=delete&id=' . $row->id . '" // 修改 page 参数
+        echo '<td><a href="?page=zhuige-height-data&action=delete&id=' . $row->id . '"
                 onclick="return confirm(\'确定要删除这条记录吗？\')"
                 class="button button-small">删除</a></td>';
         echo '</tr>';
@@ -271,5 +263,3 @@ function zhuige_xcx_height_data_page() { // 修改 function_name
 
     echo '</div>';
 }
-
-?>

@@ -34,19 +34,10 @@
 				"navigationBarTextStyle": "white",
 				"enablePullDownRefresh": false
 			}
-		},
-		{
-			"path" : "pages/diy/diy",
-			"style" : 
-			{
-				"navigationBarTitleText" : ""
-			}
-		},
-		{
-			"path" : "pages/diy/rr/rr",
-			"style" : 
-			{
-				"navigationBarTitleText" : ""
+		},  {
+			"path" : "pages/sgtool/sgtest/sgtest",  
+			"style" : {
+				"navigationBarTitleText" : "身高预测"  //  设置导航栏标题
 			}
 		}
 	],

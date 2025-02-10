@@ -4,7 +4,8 @@
     "pages/tabs/forum/forum",
     "pages/tabs/create/create",
     "pages/tabs/notice/notice",
-    "pages/tabs/mine/mine"
+    "pages/tabs/mine/mine",
+    "pages/sgtool/sgtest/sgtest"
   ],
   "subPackages": [
     {

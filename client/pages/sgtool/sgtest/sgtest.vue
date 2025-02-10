@@ -69,7 +69,7 @@
                 </view>
             </view>
 
-            <image class="background-image" src="/static/images/giraffe.png" mode="aspectFit"></image>
+            <image class="background-image" src="/static/sgtoolimages/giraffe.png" mode="aspectFit"></image>
         </view>
     </view>
 </template>
