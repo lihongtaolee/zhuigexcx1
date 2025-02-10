@@ -50,7 +50,7 @@
     "quickapp" : {},
     /* 小程序特有相关 */
     "mp-weixin" : {
-        "appid" : "wxc64c6856d656030d",
+        "appid" : "wx4f6ead20ba311671",
         "setting" : {
             "urlCheck" : false,
             "minified" : true,
@@ -70,7 +70,7 @@
         },
         "requiredPrivateInfos" : [ "chooseLocation", "chooseAddress" ],
         "requiredBackgroundModes" : [ "audio" ],
-        // "lazyCodeLoading": "requiredComponents",
+        "lazyCodeLoading" : "requiredComponents",
         "libVersion" : "latest",
         "optimization" : {
             "subPackages" : true
@@ -90,3 +90,8 @@
     },
     "vueVersion" : "2"
 }
+// "wxacommentplugin" : {
+//     "version" : "latest",
+//     "provider" : "wx82e6ae1175f264fa"
+// }
+

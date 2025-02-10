@@ -105,5 +105,6 @@
   "requiredBackgroundModes": [
     "audio"
   ],
+  "lazyCodeLoading": "requiredComponents",
   "usingComponents": {}
 }

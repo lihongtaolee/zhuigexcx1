@@ -11,6 +11,7 @@
     "minified": true,
     "newFeature": true,
     "bigPackageSizeSupport": true,
+    "packNpmRelationList": [],
     "babelSetting": {
       "ignore": [],
       "disablePlugins": [],
@@ -19,7 +20,7 @@
   },
   "compileType": "miniprogram",
   "libVersion": "latest",
-  "appid": "wxc64c6856d656030d",
+  "appid": "wx4f6ead20ba311671",
   "projectname": "zhuige-xcx",
   "condition": {},
   "editorSetting": {

@@ -225,7 +225,8 @@ class ZhuiGe_Xcx
 		$this->loader->add_action('plugins_loaded', $plugin_i18n, 'load_plugin_textdomain');
 	}
 
-	private function define_admin_hooks() {
+	private function define_admin_hooks()
+	{
 		if (!is_admin()) {
 			return;
 		}
@@ -234,13 +235,6 @@ class ZhuiGe_Xcx
 
 		$this->loader->add_action('admin_enqueue_scripts', $admin, 'enqueue_styles');
 		$this->loader->add_action('admin_enqueue_scripts', $admin, 'enqueue_scripts');
-
-		// 添加圈子管理相关的钩子
-		$this->loader->add_action('init', $admin, 'register_forum_post_type');
-		$this->loader->add_action('add_meta_boxes', $admin, 'add_forum_meta_boxes');
-		$this->loader->add_action('save_post_zhuige_bbs_forum', $admin, 'save_forum_meta');
-		$this->loader->add_filter('manage_zhuige_bbs_forum_posts_columns', $admin, 'forum_columns');
-		$this->loader->add_action('manage_zhuige_bbs_forum_posts_custom_column', $admin, 'forum_custom_column', 10, 2);
 
 		$this->loader->add_action('init', $admin, 'create_menu', 0);
 		$this->loader->add_action('admin_init', $admin, 'admin_init');
