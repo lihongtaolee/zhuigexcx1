@@ -86,7 +86,7 @@ export default {
             boyHeight: 0,
             girlHeight: 0,
             errorMessage: '',
-            apiBaseUrl: 'https://x.erquhealth.com/wp-json/jiangqie-api/v1',
+            apiBaseUrl: 'https://x.erquhealth.com/wp-json/zhuige-xcx/v1',
             isCalculating: false,
             showSuccess: false
         }

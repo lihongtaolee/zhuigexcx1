@@ -9,9 +9,14 @@ add_action('rest_api_init', function() {
 
 /**
  * Plugin Name:     sgtool
+ * Plugin URI:      https://erquhealth.com/
+ * Description:     身高预测工具
  * Version:         1.0.0
  * Author:          二区健康
  * Author URI:      https://erquhealth.com/
+ * License:         GPLv2 or later
+ * License URI:     http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ * Text Domain:     sgtool
  */
 
 if (!defined('WPINC')) {
@@ -19,9 +24,9 @@ if (!defined('WPINC')) {
 }
 
 
-function activate_jiangqie_api()
+function activate_zhuige_xcx() // 修改函数名
 {
-    require_once JIANG_QIE_API_BASE_DIR . 'includes/class-jiangqie-api-activator.php';
+    require_once JIANG_QIE_API_BASE_DIR . 'includes/class-zhuige-xcx-activator.php';
     JiangQie_API_Activator::activate();
     // 创建身高预测表
     create_height_predictions_table();
@@ -29,7 +34,7 @@ function activate_jiangqie_api()
 
 // REST API 接口
 add_action('rest_api_init', function () {
-    register_rest_route('jiangqie-api/v1', '/save-height', array(
+    register_rest_route('zhuige-xcx/v1', '/save-height', array( // 修改路由名称
         'methods' => 'POST',
         'callback' => 'save_height_data',
         'permission_callback' => '__return_true'
@@ -39,14 +44,14 @@ add_action('rest_api_init', function () {
 function save_height_data(WP_REST_Request $request) {
     global $wpdb;
     $table_name = $wpdb->prefix . 'height_predictions';
-    
+
     // 检查表是否存在，如果不存在则创建
     $table_exists = $wpdb->get_var("SHOW TABLES LIKE '$table_name'") === $table_name;
     if (!$table_exists) {
         error_log('Height Prediction - Table does not exist, creating...');
         create_height_predictions_table();
     }
-    
+
     // 检查表结构
     $column_exists = $wpdb->get_results("SHOW COLUMNS FROM $table_name LIKE 'user_nickname'");
     if (empty($column_exists)) {
@@ -56,11 +61,11 @@ function save_height_data(WP_REST_Request $request) {
 
     $data = json_decode($request->get_body(), true);
     error_log('Height Prediction - Received data: ' . print_r($data, true));
-    
+
     // 从前端获取数据
     $father_height = floatval($data['fatherHeight']);
     $mother_height = floatval($data['motherHeight']);
-    
+
     // 验证输入
     if (!$father_height || !$mother_height) {
         return array(
@@ -68,9 +73,9 @@ function save_height_data(WP_REST_Request $request) {
             'msg' => '请输入父母身高'
         );
     }
-    
+
     // 验证数值合理性
-    if ($father_height < 140 || $father_height > 220 || 
+    if ($father_height < 140 || $father_height > 220 ||
         $mother_height < 140 || $mother_height > 220) {
         return array(
             'code' => 400,
@@ -95,9 +100,9 @@ function save_height_data(WP_REST_Request $request) {
         'girl_height' => $girl_height,
         'created_at' => current_time('mysql')
     );
-    
+
     error_log('Height Prediction - Inserting data: ' . print_r($insert_data, true));
-    
+
     $result = $wpdb->insert(
         $table_name,
         $insert_data,
@@ -122,7 +127,7 @@ function save_height_data(WP_REST_Request $request) {
             'predictedHeight' => true
         )
     );
-    
+
     error_log('Height Prediction - Success response: ' . print_r($response_data, true));
     return $response_data;
 }
@@ -147,7 +152,7 @@ function create_height_predictions_table() {
 
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
     dbDelta($sql);
-    
+
     // 检查表是否创建成功
     $table_exists = $wpdb->get_var("SHOW TABLES LIKE '$table_name'") === $table_name;
     if (!$table_exists) {
@@ -158,22 +163,22 @@ function create_height_predictions_table() {
 }
 
 // 后台管理菜单
-add_action('admin_menu', 'jiangqie_api_menu');
+add_action('admin_menu', 'zhuige_xcx_menu'); // 修改菜单函数名
 
-function jiangqie_api_menu() {
+function zhuige_xcx_menu() { // 修改菜单函数名
     add_menu_page(
         '身高预测数据',
         '身高预测',
         'manage_options',
-        'jiangqie-height-data',
-        'jiangqie_height_data_page',
+        'zhuige-height-data', // 修改 menu_slug
+        'zhuige_xcx_height_data_page', // 修改 function_name
         'dashicons-chart-line',
         25
     );
 }
 
 // 修改后台显示部分的代码
-function jiangqie_height_data_page() {
+function zhuige_xcx_height_data_page() { // 修改 function_name
     if (!current_user_can('manage_options')) {
         wp_die(__('您没有足够的权限访问此页面。'));
     }
@@ -190,15 +195,15 @@ function jiangqie_height_data_page() {
 
     global $wpdb;
     $table_name = $wpdb->prefix . 'height_predictions';
-    
+
     // 分页设置
     $per_page = 20;
     $current_page = isset($_GET['paged']) ? max(1, intval($_GET['paged'])) : 1;
     $offset = ($current_page - 1) * $per_page;
-    
+
     // 获取总记录数
     $total_items = $wpdb->get_var("SELECT COUNT(*) FROM $table_name");
-    
+
     // 获取数据
     $results = $wpdb->get_results($wpdb->prepare(
         "SELECT * FROM $table_name ORDER BY created_at DESC LIMIT %d OFFSET %d",
@@ -239,8 +244,8 @@ function jiangqie_height_data_page() {
         echo '<td>' . number_format($boy_height, 1) . '</td>';
         echo '<td>' . number_format($girl_height, 1) . '</td>';
         echo '<td>' . date('Y-m-d H:i', strtotime($row->created_at)) . '</td>';
-        echo '<td><a href="?page=jiangqie-height-data&action=delete&id=' . $row->id . '" 
-                onclick="return confirm(\'确定要删除这条记录吗？\')" 
+        echo '<td><a href="?page=zhuige-height-data&action=delete&id=' . $row->id . '" // 修改 page 参数
+                onclick="return confirm(\'确定要删除这条记录吗？\')"
                 class="button button-small">删除</a></td>';
         echo '</tr>';
     }
