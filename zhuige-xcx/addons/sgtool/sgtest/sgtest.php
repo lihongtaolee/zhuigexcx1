@@ -187,6 +187,8 @@ function zhuige_xcx_height_data_page() { // 使用 zhuige_xcx_height_data_page �
 
     global $wpdb;
     $table_name = $wpdb->prefix . 'height_predictions';
+    $user_table_name = $wpdb->prefix . 'users';
+    $usermeta_table_name = $wpdb->prefix . 'usermeta';
 
     // 分页设置
     $per_page = 20;
@@ -196,53 +198,76 @@ function zhuige_xcx_height_data_page() { // 使用 zhuige_xcx_height_data_page �
     // 获取总记录数
     $total_items = $wpdb->get_var("SELECT COUNT(*) FROM $table_name");
 
-    // 获取数据
-    $results = $wpdb->get_results($wpdb->prepare(
-        "SELECT * FROM $table_name ORDER BY created_at DESC LIMIT %d OFFSET %d",
-        $per_page,
-        $offset
-    ));
+    // 获取数据 -  修改后的 SQL 查询语句
+    $sql = $wpdb->prepare("
+        SELECT
+            hp.*,
+            u.user_login,
+            u.user_email,
+            um_nickname.meta_value AS wp_nickname,
+            um_mobile.meta_value AS user_phone_number
+        FROM {$table_name} AS hp
+        LEFT JOIN {$user_table_name} AS u ON hp.user_id = u.ID  --  已将 INNER JOIN  修改为  LEFT JOIN
+        LEFT JOIN {$usermeta_table_name} AS um_nickname ON u.ID = um_nickname.user_id AND um_nickname.meta_key = 'nickname'
+        LEFT JOIN {$usermeta_table_name} AS um_mobile ON u.ID = um_mobile.user_id AND um_mobile.meta_key = 'zhuige_xcx_user_mobile'
+        ORDER BY hp.created_at DESC
+        LIMIT %d OFFSET %d
+    ", $per_page, $offset);
 
-    // 显示数据表格
-    echo '<table class="wp-list-table widefat fixed striped">';
+    //  -----  添加以下代码，记录 SQL 查询语句到 debug.log  -----
+    error_log( 'Height Prediction - Raw SQL Query: ' . $sql, 3, WP_CONTENT_DIR . '/debug.log');
+    //  -----  添加代码结束  -----
+
+    $results = $wpdb->get_results($sql);
+    error_log('Height Prediction - SQL Query Results: ' . print_r($results, true));
+    trigger_error('Test debug log entry - Force a warning error', E_USER_WARNING); //  <--- 确保这行代码已添加
+
+    // 显示数据表格 - 修改后的表格结构
+    echo '<table class="wp-list-table widefat fixed striped table-view-list posts">';
     echo '<thead>
-            <tr>
-                <th width="5%">ID</th>
-                <th width="15%">用户ID</th>
-                <th width="15%">用户昵称</th>
-                <th width="10%">父亲身高(cm)</th>
-                <th width="10%">母亲身高(cm)</th>
-                <th width="15%">男孩预测身高(cm)</th>
-                <th width="15%">女孩预测身高(cm)</th>
-                <th width="10%">预测时间</th>
-                <th width="5%">操作</th>
-            </tr>
-          </thead>';
-    echo '<tbody>';
+        <tr>
+            <th width="5%">ID</th>
+            <th width="10%">用户ID</th>
+            <th width="15%">用户昵称</th>
+            <th width="15%">手机号</th>
+            <th width="10%">父亲身高(cm)</th>
+            <th width="10%">母亲身高(cm)</th>
+            <th width="15%">男孩预测身高(cm)</th>
+            <th width="15%">女孩预测身高(cm)</th>
+            <th width="10%">预测时间</th>
+            <th width="5%">操作</th>
+        </tr>
+      </thead>';
+	  echo '<tbody>';
 
-    foreach ($results as $row) {
-        // 确保数值为浮点数
-        $father_height = is_numeric($row->father_height) ? floatval($row->father_height) : 0;
-        $mother_height = is_numeric($row->mother_height) ? floatval($row->mother_height) : 0;
-        $boy_height = is_numeric($row->boy_height) ? floatval($row->boy_height) : 0;
-        $girl_height = is_numeric($row->girl_height) ? floatval($row->girl_height) : 0;
-
-        echo '<tr>';
-        echo '<td>' . esc_html($row->id) . '</td>';
-        echo '<td>' . esc_html($row->user_id) . '</td>';
-        echo '<td>' . esc_html($row->user_nickname) . '</td>';
-        echo '<td>' . number_format($father_height, 1) . '</td>';
-        echo '<td>' . number_format($mother_height, 1) . '</td>';
-        echo '<td>' . number_format($boy_height, 1) . '</td>';
-        echo '<td>' . number_format($girl_height, 1) . '</td>';
-        echo '<td>' . date('Y-m-d H:i', strtotime($row->created_at)) . '</td>';
-        echo '<td><a href="?page=zhuige-height-data&action=delete&id=' . $row->id . '"
-                onclick="return confirm(\'确定要删除这条记录吗？\')"
-                class="button button-small">删除</a></td>';
-        echo '</tr>';
-    }
-
-    echo '</tbody></table>';
+	  if ($results) {
+		  foreach ($results as $row) {
+			  // 确保数值为浮点数 (这里已经不需要再重新赋值，直接使用 $row 对象中的属性即可)
+			  // $father_height = is_numeric($row->father_height) ? floatval($row->father_height) : 0;
+			  // $mother_height = is_numeric($row->mother_height) ? floatval($row->mother_height) : 0;
+			  // $boy_height = is_numeric($row->boy_height) ? floatval($row->boy_height) : 0;
+			  // $girl_height = is_numeric($row->girl_height) ? floatval($row->girl_height) : 0;
+  
+			  echo '<tr>';
+			  echo '<td>' . esc_html($row->id) . '</td>';
+			  echo '<td>' . esc_html($row->user_id) . '</td>'; // 用户ID (wp_height_predictions.user_id, 实际是 WP User ID)
+			  echo '<td>' . esc_html($row->wp_nickname) . '</td>'; // 用户昵称 (WordPress 昵称, 从 wp_usermeta 表获取)
+			  echo '<td>' . esc_html($row->user_phone_number) . '</td>'; // 用户手机号 (WordPress 手机号, 从 wp_usermeta 表获取)
+			  echo '<td>' . number_format($row->father_height, 1) . '</td>';  //  修正：使用 $row->father_height
+			  echo '<td>' . number_format($row->mother_height, 1) . '</td>'; //   修正：使用 $row->mother_height
+			  echo '<td>' . number_format($row->boy_height, 1) . '</td>';    //   修正：使用 $row->boy_height
+			  echo '<td>' . number_format($row->girl_height, 1) . '</td>';   //   修正：使用 $row->girl_height
+			  echo '<td>' . date('Y-m-d H:i', strtotime($row->created_at)) . '</td>';
+			  echo '<td><a href="?page=zhuige-height-data&action=delete&id=' . $row->id . '"
+					  onclick="return confirm(\'确定要删除这条记录吗？\')"
+					  class="button button-small">删除</a></td>';
+			  echo '</tr>';
+		  }
+	  } else {
+		  echo '<tr><td colspan="10">暂无数据</td></tr>';
+	  }
+  
+	  echo '</tbody></table>';
 
     // 分页导航
     $total_pages = ceil($total_items / $per_page);
