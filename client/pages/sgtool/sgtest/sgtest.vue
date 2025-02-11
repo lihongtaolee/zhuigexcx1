@@ -19,12 +19,12 @@
                 <button class="cute-button" @click="calculateHeight" :disabled="isCalculating">
                     {{ isCalculating ? '预测中...' : '开始神奇预测' }}
                 </button>
-                
+
                 <view v-if="isCalculating" class="loading-container">
                     <view class="loading-spinner"></view>
                     <text class="loading-text">正在计算中...</text>
                 </view>
-                
+
                 <view v-if="showSuccess" class="success-message">
                     <text>预测完成！</text>
                 </view>
@@ -75,7 +75,9 @@
 </template>
 
 <script>
-// Script部分保持不变
+import Auth from '@/utils/auth.js';
+import Util from '@/utils/util.js'; // 引入 Util
+
 export default {
     data() {
         return {
@@ -88,23 +90,25 @@ export default {
             errorMessage: '',
             apiBaseUrl: 'https://x.erquhealth.com/wp-json/zhuige-xcx/v1',
             isCalculating: false,
-            showSuccess: false
+            showSuccess: false,
+            userId: null, // 用于存储用户ID
         }
     },
     methods: {
         async calculateHeight() {
+            // 清除旧的错误信息和状态
             this.errorMessage = ''
             this.predictedHeight = false
             this.showSuccess = false
-            
+
             if (!this.fatherHeight || !this.motherHeight) {
                 this.errorMessage = '请输入父母身高'
                 return
             }
-            
+
             const fHeight = parseFloat(this.fatherHeight)
             const mHeight = parseFloat(this.motherHeight)
-            
+
             if (fHeight < 140 || fHeight > 220 || mHeight < 140 || mHeight > 220) {
                 this.errorMessage = '请输入合理的身高数值(140-220cm)'
                 return
@@ -114,20 +118,12 @@ export default {
 
             const localBoyHeight = ((fHeight + mHeight + 13) / 2).toFixed(1)
             const localGirlHeight = ((fHeight + mHeight - 13) / 2).toFixed(1)
-            
-            try {
-                let userInfo = {}
-                try {
-                    userInfo = uni.getStorageSync('userInfo') || {}
-                } catch (e) {
-                    console.log('获取用户信息失败', e)
-                }
 
+            try {
                 const requestData = {
                     fatherHeight: fHeight,
                     motherHeight: mHeight,
-                    userId: userInfo.userId || '',
-                    userNickname: userInfo.nickName || ''
+                    user_id: this.userId, // 使用 data 中的 userId
                 }
 
                 const response = await new Promise((resolve, reject) => {
@@ -185,11 +181,56 @@ export default {
                 this.isCalculating = false
             }
         }
-    }
+    },
+    onLoad() {
+        const user = Auth.getUser();
+
+        if (!user || !user.token) {
+            wx.showModal({
+                title: '温馨提示',
+                content: '为了记录您的身高预测信息，请先登录',
+                showCancel: false,
+                confirmText: '去登录',
+                success: (res) => {
+                    if (res.confirm) {
+                        uni.redirectTo({
+                            url: '/pages/user/login/login?type=login&tip=使用身高预测功能'
+                        });
+                    } else {
+                        Util.navigateBack();
+                    }
+                }
+            });
+            return;
+        }
+
+        if (!user.mobile) {
+            wx.showModal({
+                title: '温馨提示',
+                content: '为了完善您的用户信息，请先绑定手机号',
+                showCancel: false,
+                confirmText: '去绑定',
+                success: (res) => {
+                    if (res.confirm) {
+                        uni.redirectTo({
+                            url: '/pages/user/login/login?type=mobile&tip=使用身高预测功能'
+                        });
+                    } else {
+                        Util.navigateBack();
+                    }
+                }
+            });
+            return;
+        }
+
+        this.userId = user.id;
+        console.log('用户已登录并绑定手机号', user);
+    },
 }
 </script>
 
 <style scoped>
+/*  样式部分保持不变，与您提供的代码一致 */
 .page-container {
     position: relative;
     min-height: 100vh;

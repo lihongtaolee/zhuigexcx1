@@ -44,15 +44,9 @@ function save_height_data(WP_REST_Request $request) {
         create_height_predictions_table(); //  可以保留在这里，或者移动到主插件激活钩子，根据您的选择
     }
 
-    // 检查表结构
-    $column_exists = $wpdb->get_results("SHOW COLUMNS FROM $table_name LIKE 'user_nickname'");
-    if (empty($column_exists)) {
-        error_log('Height Prediction - Adding user_nickname column...');
-        $wpdb->query("ALTER TABLE $table_name ADD COLUMN user_nickname varchar(100) DEFAULT ''");
-    }
 
     $data = json_decode($request->get_body(), true);
-    error_log('Height Prediction - Received data: ' . print_r($data, true));
+    error_log('Height Prediction - Received data: ' . print_r($data, true)); // **[DEBUG增强] 记录接收到的完整数据**
 
     // 从前端获取数据
     $father_height = floatval($data['fatherHeight']);
@@ -79,13 +73,13 @@ function save_height_data(WP_REST_Request $request) {
     $boy_height = ($father_height + $mother_height + 13) / 2;
     $girl_height = ($father_height + $mother_height - 13) / 2;
 
-    // 获取用户信息
-    $user_id = isset($data['userId']) ? sanitize_text_field($data['userId']) : '';
-    $user_nickname = isset($data['userNickname']) ? sanitize_text_field($data['userNickname']) : '';
+    // 获取用户信息 (只获取 user_id)
+    // 注意：前端 requestData 的 key 是 user_id，这里后端接收时也使用 'user_id'
+    $user_id = isset($data['user_id']) ? sanitize_text_field($data['user_id']) : ''; // **使用 'user_id' 匹配前端**
+
 
     $insert_data = array(
         'user_id' => $user_id,
-        'user_nickname' => $user_nickname,
         'father_height' => $father_height,
         'mother_height' => $mother_height,
         'boy_height' => $boy_height,
@@ -93,12 +87,12 @@ function save_height_data(WP_REST_Request $request) {
         'created_at' => current_time('mysql')
     );
 
-    error_log('Height Prediction - Inserting data: ' . print_r($insert_data, true));
+    error_log('Height Prediction - Inserting data Array BEFORE wpdb->insert: ' . print_r($insert_data, true)); // **[DEBUG增强] 在 wpdb->insert 前记录 insert_data 数组**
 
     $result = $wpdb->insert(
         $table_name,
         $insert_data,
-        array('%s', '%s', '%f', '%f', '%f', '%f', '%s')
+        array('%s', '%f', '%f', '%f', '%f', '%s') //  修改类型数组
     );
 
     if ($result === false) {
@@ -109,6 +103,8 @@ function save_height_data(WP_REST_Request $request) {
             'debug' => $wpdb->last_error
         );
     }
+    error_log('Height Prediction - wpdb->last_error AFTER insert: ' . $wpdb->last_error); // **[DEBUG增强] 在 insert 后记录 wpdb->last_error**
+
 
     $response_data = array(
         'code' => 200,
@@ -133,7 +129,7 @@ function create_height_predictions_table() {
     $sql = "CREATE TABLE IF NOT EXISTS $table_name (
         id mediumint(9) NOT NULL AUTO_INCREMENT,
         user_id varchar(100) DEFAULT '',
-        user_nickname varchar(100) DEFAULT '',
+        -- user_nickname varchar(100) DEFAULT '',  // 删除此行
         father_height float NOT NULL,
         mother_height float NOT NULL,
         boy_height float NOT NULL,
@@ -238,36 +234,36 @@ function zhuige_xcx_height_data_page() { // 使用 zhuige_xcx_height_data_page �
             <th width="5%">操作</th>
         </tr>
       </thead>';
-	  echo '<tbody>';
+      echo '<tbody>';
 
-	  if ($results) {
-		  foreach ($results as $row) {
-			  // 确保数值为浮点数 (这里已经不需要再重新赋值，直接使用 $row 对象中的属性即可)
-			  // $father_height = is_numeric($row->father_height) ? floatval($row->father_height) : 0;
-			  // $mother_height = is_numeric($row->mother_height) ? floatval($row->mother_height) : 0;
-			  // $boy_height = is_numeric($row->boy_height) ? floatval($row->boy_height) : 0;
-			  // $girl_height = is_numeric($row->girl_height) ? floatval($row->girl_height) : 0;
-  
-			  echo '<tr>';
-			  echo '<td>' . esc_html($row->id) . '</td>';
-			  echo '<td>' . esc_html($row->user_id) . '</td>'; // 用户ID (wp_height_predictions.user_id, 实际是 WP User ID)
-			  echo '<td>' . esc_html($row->wp_nickname) . '</td>'; // 用户昵称 (WordPress 昵称, 从 wp_usermeta 表获取)
-			  echo '<td>' . esc_html($row->user_phone_number) . '</td>'; // 用户手机号 (WordPress 手机号, 从 wp_usermeta 表获取)
-			  echo '<td>' . number_format($row->father_height, 1) . '</td>';  //  修正：使用 $row->father_height
-			  echo '<td>' . number_format($row->mother_height, 1) . '</td>'; //   修正：使用 $row->mother_height
-			  echo '<td>' . number_format($row->boy_height, 1) . '</td>';    //   修正：使用 $row->boy_height
-			  echo '<td>' . number_format($row->girl_height, 1) . '</td>';   //   修正：使用 $row->girl_height
-			  echo '<td>' . date('Y-m-d H:i', strtotime($row->created_at)) . '</td>';
-			  echo '<td><a href="?page=zhuige-height-data&action=delete&id=' . $row->id . '"
-					  onclick="return confirm(\'确定要删除这条记录吗？\')"
-					  class="button button-small">删除</a></td>';
-			  echo '</tr>';
-		  }
-	  } else {
-		  echo '<tr><td colspan="10">暂无数据</td></tr>';
-	  }
-  
-	  echo '</tbody></table>';
+      if ($results) {
+          foreach ($results as $row) {
+              // 确保数值为浮点数 (这里已经不需要再重新赋值，直接使用 $row 对象中的属性即可)
+              // $father_height = is_numeric($row->father_height) ? floatval($row->father_height) : 0;
+              // $mother_height = is_numeric($row->mother_height) ? floatval($row->mother_height) : 0;
+              // $boy_height = is_numeric($row->boy_height) ? floatval($row->boy_height) : 0;
+              // $girl_height = is_numeric($row->girl_height) ? floatval($row->girl_height) : 0;
+
+              echo '<tr>';
+              echo '<td>' . esc_html($row->id) . '</td>';
+              echo '<td>' . esc_html($row->user_id) . '</td>'; // 用户ID (wp_height_predictions.user_id, 实际是 WP User ID)
+              echo '<td>' . esc_html($row->wp_nickname) . '</td>'; // 用户昵称 (WordPress 昵称, 从 wp_usermeta 表获取)
+              echo '<td>' . esc_html($row->user_phone_number) . '</td>'; // 用户手机号 (WordPress 手机号, 从 wp_usermeta 表获取)
+              echo '<td>' . number_format($row->father_height, 1) . '</td>';  //  修正：使用 $row->father_height
+              echo '<td>' . number_format($row->mother_height, 1) . '</td>'; //   修正：使用 $row->mother_height
+              echo '<td>' . number_format($row->boy_height, 1) . '</td>';    //   修正：使用 $row->boy_height
+              echo '<td>' . number_format($row->girl_height, 1) . '</td>';   //   修正：使用 $row->girl_height
+              echo '<td>' . date('Y-m-d H:i', strtotime($row->created_at)) . '</td>';
+              echo '<td><a href="?page=zhuige-height-data&action=delete&id=' . $row->id . '"
+                      onclick="return confirm(\'确定要删除这条记录吗？\')"
+                      class="button button-small">删除</a></td>';
+              echo '</tr>';
+          }
+      } else {
+          echo '<tr><td colspan="10">暂无数据</td></tr>';
+      }
+
+      echo '</tbody></table>';
 
     // 分页导航
     $total_pages = ceil($total_items / $per_page);
