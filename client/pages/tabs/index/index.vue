@@ -19,12 +19,12 @@
 				<zhuige-swiper :items="slides"></zhuige-swiper>
 			</view>
 
-			<!-- 增加头条快报时需要 同时增加样式 zhuige-hot-box -->
-			<view class="zhuige-wide-box"
-				:class="{'zhuige-hot-box':(hot_link && hot_link.items && hot_link.items.length>0)}">
-				<zhuige-icons v-if="icons && icons.length>0" type="scroll" :items="icons"></zhuige-icons>
-				<!-- 头条快报 该模块显示/关闭要与 zhuige-hot-box 增减同步-->
-				<view v-if="hot_link && hot_link.items && hot_link.items.length>0" class="zhuige-hot-group">
+			<!-- 金刚位导航区域 -->
+			<view class="zhuige-wide-box" :class="{'zhuige-hot-box':(hot_link && hot_link.items && hot_link.items.length>0)}">
+			  <!-- 去掉 type 属性，由 zhuige-icons 内部自动判断 -->
+			  <zhuige-icons v-if="icons && icons.length>0" :items="icons"></zhuige-icons>
+			  <!-- 头条快报相关代码保持不变 -->
+			  <view v-if="hot_link && hot_link.items && hot_link.items.length>0" class="zhuige-hot-group">
 					<view class="zhuige-hot-news">
 						<image v-if="hot_link.icon" mode="widthFix" :src="hot_link.icon"></image>
 						<swiper v-if="hot_link.items.length>0" class="zhuige-hot-swiper" vertical circular="ture"
