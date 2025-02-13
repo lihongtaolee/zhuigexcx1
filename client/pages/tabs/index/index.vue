@@ -1,6 +1,6 @@
 <template>
 	<view class="content">
-		<uni-nav-bar :fixed="true" :statusBar="true" :border="false" background-color="#F5F5F5">
+		<uni-nav-bar :fixed="true" :statusBar="true" :border="false" background-color="#8c52ff">
 			<view class="zhuige-top-bar" :style="style">
 				<template slot="left">
 					<view v-if="logo" class="zhuige-top-logo">

@@ -183,7 +183,7 @@ export default {
 .zhuige-icon {
     display: flex;
     flex-wrap: wrap;
-    padding: 16rpx 0;
+    margin: 20rpx 0 16rpx;
     background-color: #ffffff;
 }
 
@@ -194,6 +194,7 @@ export default {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    margin: 8rpx 0;
 }
 
 /*  更具体的选择器，提高优先级，覆盖 icons.wxss 中的样式  */
@@ -212,9 +213,9 @@ export default {
 }
 
 .zhuige-icon .text.icons--text {
-    margin-top: 6rpx !important;
+    margin-top: 8rpx !important;
     display: block;
-    line-height: 1.2em;
+    line-height: 1.4em;
     font-size: 24rpx;
     color: #333333;
     font-weight: 400;
@@ -240,7 +241,6 @@ export default {
     display: flex;
     flex-wrap: wrap;
     padding: 0;
-    margin: 0;
 }
 
 .zhuige-wrap-icon > view {

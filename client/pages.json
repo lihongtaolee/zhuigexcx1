@@ -51,7 +51,7 @@
 		"borderStyle": "white",
 		"backgroundColor": "#FFFFFF",
 		"color": "#8F8F94",
-		"selectedColor": "#000000",
+		"selectedColor": "#8c52ff",
 		// #ifndef MP-WEIXIN
 		"iconWidth": "28px",
 		// #endif

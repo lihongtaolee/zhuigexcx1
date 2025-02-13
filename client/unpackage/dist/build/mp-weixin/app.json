@@ -59,7 +59,7 @@
     "borderStyle": "white",
     "backgroundColor": "#FFFFFF",
     "color": "#8F8F94",
-    "selectedColor": "#000000",
+    "selectedColor": "#8c52ff",
     "list": [
       {
         "pagePath": "pages/tabs/index/index",
