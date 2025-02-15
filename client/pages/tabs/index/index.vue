@@ -15,6 +15,22 @@
 		</uni-nav-bar>
 
 		<view class="" :style="style">
+			<!-- 身高预测AI模块 -->
+			<view class="zhuige-cust-block" style="margin-bottom: 20rpx;">
+				<view class="zhuige-block">
+					<view class="zhuige-block-head">
+						<view>身高预测AI</view>
+						<view @click="openLink('/pages/sgtool/sgycai/sgycai')">详细预测</view>
+					</view>
+					<zhuige-height-predict
+						:currentHeight="heightData.currentHeight"
+						:geneticHeight="heightData.geneticHeight"
+						:potentialHeight="heightData.potentialHeight"
+						:probability="heightData.probability"
+					></zhuige-height-predict>
+				</view>
+			</view>
+
 			<view v-if="slides && slides.length>0" class="zhuige-wide-box">
 				<zhuige-swiper :items="slides"></zhuige-swiper>
 			</view>
@@ -46,6 +62,8 @@
 			<view v-if="imgs_top" class="zhuige-cust-block">
 				<zhuige-scroll-ad :title="imgs_top.title" :items="imgs_top.items"></zhuige-scroll-ad>
 			</view>
+
+			
 
 			<!-- 热门标签 -->
 			<view v-if="subject_hots && subject_hots.length>0" class="zhuige-cust-block">
@@ -734,43 +752,52 @@
 										</view>
 									</template>
 								</view>
-							</view>
-						</template>
-						<template v-else-if="lastLoaded">
-							<zhuige-nodata></zhuige-nodata>
-						</template>
+							</template>
+							<template v-else-if="lastLoaded">
+								<zhuige-nodata></zhuige-nodata>
+							</template>
+						</view>
+					</view>
+
+					<view v-else-if="cur_tab=='follow'" class="zhuige-tab-block">
+						<!-- 关注的用户 -->
+						<view class="zhugie-follow-box">
+							<zhuige-user-list v-if="followUser && followUser.users.length>0" type="scroll"
+								:title="followUser.title" :users="followUser.users" :buttons="false"
+								ext-class="zhuige-user-followed"></zhuige-user-list>
+						</view>
+						<view class="zhuige-social-list-head">好友话题</view>
+
+						<view class="zhuige-social-list">
+							<template v-if="followTopics && followTopics.length>0">
+								<zhuige-topic v-for="(topic, index) in followTopics" :key="index" :topic="topic">
+								</zhuige-topic>
+							</template>
+							<template v-else-if="followLoaded">
+								<zhuige-nodata></zhuige-nodata>
+							</template>
+						</view>
+					</view>
+
+					<uni-load-more
+						v-if="(tab_type==1 || (tab_type==2 && cur_tab=='last')) && lastTopics && lastTopics.length>0"
+						:status="lastLoadMore">
+					</uni-load-more>
+
+					<uni-load-more v-if="cur_tab=='follow' && followTopics && followTopics.length>0"
+						:status="followLoadMore">
+					</uni-load-more>
+				</template>
+			</view>
+
+			<view v-if="pop_ad" class="zhugie-pop-cover">
+				<view @click="clickPopAd" class="zhuige-pop-box">
+					<image mode="aspectFit" :src="pop_ad.image"></image>
+					<view>
+						<uni-icons @click="clickPopAdClose" type="close" size="32" color="#FFFFFF"></uni-icons>
 					</view>
 				</view>
-
-				<view v-else-if="cur_tab=='follow'" class="zhuige-tab-block">
-					<!-- 关注的用户 -->
-					<view class="zhugie-follow-box">
-						<zhuige-user-list v-if="followUser && followUser.users.length>0" type="scroll"
-							:title="followUser.title" :users="followUser.users" :buttons="false"
-							ext-class="zhuige-user-followed"></zhuige-user-list>
-					</view>
-					<view class="zhuige-social-list-head">好友话题</view>
-
-					<view class="zhuige-social-list">
-						<template v-if="followTopics && followTopics.length>0">
-							<zhuige-topic v-for="(topic, index) in followTopics" :key="index" :topic="topic">
-							</zhuige-topic>
-						</template>
-						<template v-else-if="followLoaded">
-							<zhuige-nodata></zhuige-nodata>
-						</template>
-					</view>
-				</view>
-
-				<uni-load-more
-					v-if="(tab_type==1 || (tab_type==2 && cur_tab=='last')) && lastTopics && lastTopics.length>0"
-					:status="lastLoadMore">
-				</uni-load-more>
-
-				<uni-load-more v-if="cur_tab=='follow' && followTopics && followTopics.length>0"
-					:status="followLoadMore">
-				</uni-load-more>
-			</template>
+			</view>
 		</view>
 
 		<view v-if="pop_ad" class="zhugie-pop-cover">

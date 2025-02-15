@@ -5,7 +5,8 @@
     "pages/tabs/create/create",
     "pages/tabs/notice/notice",
     "pages/tabs/mine/mine",
-    "pages/sgtool/sgtest/sgtest"
+    "pages/sgtool/sgtest/sgtest",
+    "pages/sgtool/sgycai/sgycai"
   ],
   "subPackages": [
     {

@@ -37,7 +37,12 @@
 		},  {
 			"path" : "pages/sgtool/sgtest/sgtest",  
 			"style" : {
-				"navigationBarTitleText" : "身高预测"  //  设置导航栏标题
+				"navigationBarTitleText" : "遗传身高预测"  //  设置导航栏标题
+			}
+		}, {
+			"path" : "pages/sgtool/sgycai/sgycai",
+			"style" : {
+				"navigationBarTitleText" : "身高预测AI"
 			}
 		}
 	],

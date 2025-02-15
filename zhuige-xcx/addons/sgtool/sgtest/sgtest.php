@@ -127,7 +127,7 @@ add_action('admin_menu', 'zhuige_xcx_menu');
 function zhuige_xcx_menu() {
     add_menu_page(
         '身高预测数据',
-        '身高预测',
+        '遗传身高预测',
         'manage_options',
         'zhuige-height-data',
         'zhuige_xcx_height_data_page',
@@ -146,7 +146,7 @@ function zhuige_xcx_height_data_page() {
         $wpdb->delete($table_name, array('id' => $_GET['id']), array('%d'));
     }
     echo '<div class="wrap">';
-    echo '<h1>身高预测数据管理</h1>';
+    echo '<h1>遗传身高预测数据管理</h1>';
 
     global $wpdb;
     $table_name = $wpdb->prefix . 'height_predictions';

@@ -79,6 +79,9 @@ ZhuiGe_Xcx_Addon::load();
 // 包含 sgtest.php 文件 (身高预测模块)
 require_once ZHUIGE_XCX_ADDONS_DIR . 'sgtool/sgtest/sgtest.php'; // 确保包含 sgtest.php
 
+// 包含 sgycai.php 文件 (身高预测AI模块)
+require_once ZHUIGE_XCX_ADDONS_DIR . 'sgtool/sgycai/sgycai.php';
+
 require ZHUIGE_XCX_BASE_DIR . 'includes/zhuige-xcx-function.php';
 require ZHUIGE_XCX_BASE_DIR . 'includes/zhuige-xcx-user-column.php';
 require ZHUIGE_XCX_BASE_DIR . 'includes/zhuige-xcx-dashboard.php';

@@ -2,7 +2,7 @@
   <view class="page-container">
     <view class="container">
       <view class="header">
-        <text class="title">宝贝身高预测</text>
+        <text class="title">宝贝遗传身高预测</text>
         <text class="subtitle">来看看你未来会长多高呢～</text>
       </view>
       <view class="content">
