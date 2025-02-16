@@ -26,8 +26,12 @@ function activate_zhuige_xcx()
     require_once ZHUIGE_XCX_BASE_DIR . 'includes/class-zhuige-xcx-activator.php';
     ZhuiGe_Xcx_Activator::activate();
 
-    // 在插件激活时创建身高预测表  (函数调用移动到这里)
-    create_height_predictions_table(); //  **从 sgtest.php 移动到 zhuige-xcx.php 的激活函数中调用**
+    // 在插件激活时创建身高预测表（从sgtest模块移过来的函数调用）
+    create_height_predictions_table(); 
+
+    // 调用 sgycai 模块激活逻辑，确保执行 SQL 文件中的建表命令
+    require_once ZHUIGE_XCX_ADDONS_DIR . 'sgtool/sgycai/sgycai.php';
+    ZhuiGe_Xcx_Sgycai::activate();
 }
 
 function deactivate_zhuige_xcx()
@@ -42,7 +46,7 @@ register_deactivation_hook(__FILE__, 'deactivate_zhuige_xcx');
 // 插件卸载时执行的操作 (可选，但谨慎使用)
 register_uninstall_hook(__FILE__, 'uninstall_zhuige_xcx');
 function uninstall_zhuige_xcx() {
-    //  **请谨慎操作，卸载钩子是不可逆的，数据会丢失！**
+    // **请谨慎操作，卸载钩子是不可逆的，数据会丢失！**
     global $wpdb;
     $table_name = $wpdb->prefix . 'height_predictions';
     $wpdb->query("DROP TABLE IF EXISTS $table_name");

@@ -176,57 +176,64 @@ export default {
       } finally {
         this.isCalculating = false;
       }
+    },
+    async checkLoginStatus() {
+      const user = Auth.getUser();
+
+      if (!user || !user.token) {
+        return new Promise((resolve, reject) => {
+          wx.showModal({
+            title: '温馨提示',
+            content: '为了记录您的身高预测信息，请先登录',
+            showCancel: false,
+            confirmText: '去登录',
+            success: (res) => {
+              if (res.confirm) {
+                uni.redirectTo({
+                  url: '/pages/user/login/login?type=login&tip=使用身高预测功能'
+                });
+              } else {
+                Util.navigateBack();
+              }
+              reject(new Error('未登录'));
+            }
+          });
+        });
+      }
+
+      if (!user.mobile) {
+        return new Promise((resolve, reject) => {
+          wx.showModal({
+            title: '温馨提示',
+            content: '为了完善您的用户信息，请先绑定手机号',
+            showCancel: false,
+            confirmText: '去绑定',
+            success: (res) => {
+              if (res.confirm) {
+                uni.redirectTo({
+                  url: '/pages/user/login/login?type=mobile&tip=使用身高预测功能'
+                });
+              } else {
+                Util.navigateBack();
+              }
+              reject(new Error('未绑定手机号'));
+            }
+          });
+        });
+      }
+
+      // 正确获取用户ID，并赋值到组件实例
+      this.userId = user.user_id;
+      return Promise.resolve(user);
     }
   },
   onLoad() {
-    const user = Auth.getUser();
-
-    if (!user || !user.token) {
-      wx.showModal({
-        title: '温馨提示',
-        content: '为了记录您的身高预测信息，请先登录',
-        showCancel: false,
-        confirmText: '去登录',
-        success: (res) => {
-          if (res.confirm) {
-            uni.redirectTo({
-              url: '/pages/user/login/login?type=login&tip=使用身高预测功能'
-            });
-          } else {
-            Util.navigateBack();
-          }
-        }
-      });
-      return;
-    }
-
-    if (!user.mobile) {
-      wx.showModal({
-        title: '温馨提示',
-        content: '为了完善您的用户信息，请先绑定手机号',
-        showCancel: false,
-        confirmText: '去绑定',
-        success: (res) => {
-          if (res.confirm) {
-            uni.redirectTo({
-              url: '/pages/user/login/login?type=mobile&tip=使用身高预测功能'
-            });
-          } else {
-            Util.navigateBack();
-          }
-        }
-      });
-      return;
-    }
-
-    // 正确获取用户ID
-    this.userId = user.user_id;
-  },
+    this.checkLoginStatus();
+  }
 }
 </script>
 
 <style scoped>
-/* 样式部分保持原样 */
 .page-container {
   position: relative;
   min-height: 100vh;
