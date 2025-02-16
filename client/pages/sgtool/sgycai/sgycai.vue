@@ -64,7 +64,7 @@
             <view class="input-group">
               <text>测量时间:</text>
               <!-- 给 picker 添加 ref 便于调试 -->
-              <picker ref="datetimePicker" class="cute-input" mode="datetime" :value="measureTime" @change="onMeasureTimeChange">
+              <picker ref="datetimePicker" class="cute-input" mode="date" :value="measureTime" @change="onMeasureTimeChange">
                 <view>{{ measureTime || '请选择测量时间' }}</view>
               </picker>
             </view>

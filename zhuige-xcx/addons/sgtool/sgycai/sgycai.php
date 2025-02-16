@@ -194,7 +194,7 @@ class ZhuiGe_Xcx_Sgycai {
             FROM {$table_name} AS hud
             LEFT JOIN {$user_table_name} AS u ON hud.user_id = u.ID
             LEFT JOIN {$meta_table} AS um ON u.ID = um.user_id AND um.meta_key = 'zhuige_xcx_user_mobile'
-            ORDER BY hud.measure_time DESC
+            ORDER BY hud.id DESC
             LIMIT %d OFFSET %d
         ", $per_page, $offset );
         
@@ -269,3 +269,4 @@ class ZhuiGe_Xcx_Sgycai {
 }
 
 ZhuiGe_Xcx_Sgycai::getInstance();
+?>
