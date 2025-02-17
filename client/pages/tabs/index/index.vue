@@ -16,21 +16,22 @@
 
 		<view class="" :style="style">
 			<!-- 身高预测AI模块 -->
-			<view class="zhuige-cust-block" style="margin-bottom: 20rpx;">
-				<view class="zhuige-block">
-					<view class="zhuige-block-head">
-						<view>身高预测AI</view>
-						<view @click="openLink('/pages/sgtool/sgycai/sgycai')">详细预测</view>
-					</view>
-					<zhuige-height-predict
-						:currentHeight="heightData.currentHeight"
-						:geneticHeight="heightData.geneticHeight"
-						:targetHeight="heightData.targetHeight"
-						:probability="heightData.probability"
-					></zhuige-height-predict>
-				</view>
-			</view>
+			<view class="zhuige-cust-block height-predict-block" style="margin-bottom: 20rpx;">
+      <view class="zhuige-block">
+        <view class="zhuige-block-head">
+          <view>身高预测AI</view>
+          <view @click="openLink('/pages/sgtool/sgycai/sgycai')">详细预测</view>
+        </view>
+        <zhuige-height-predict
+          :currentHeight="heightData.currentHeight"
+          :geneticHeight="heightData.geneticHeight"
+          :targetHeight="heightData.targetHeight"
+          :probability="heightData.probability"
+        ></zhuige-height-predict>
+      </view>
+    </view>
 
+			<!-- 轮播图区域 -->
 			<view v-if="slides && slides.length>0" class="zhuige-wide-box">
 				<zhuige-swiper :items="slides"></zhuige-swiper>
 			</view>
@@ -834,6 +835,8 @@
 	import ZhuigeScrollAd from "@/components/zhuige-scroll-ad";
 	import ZhuigeTab from "@/components/zhuige-tab";
 	import ZhuigeNodata from "@/components/zhuige-nodata";
+	// 修改处：将 potentialHeight 改为 targetHeight
+	import zhuigeHeightPredict from '@/components/zhuige-height-predict.vue';
 
 	export default {
 		components: {
@@ -843,7 +846,8 @@
 			ZhuigeUserList,
 			ZhuigeScrollAd,
 			ZhuigeTab,
-			ZhuigeNodata
+			ZhuigeNodata,
+			zhuigeHeightPredict
 		},
 
 		data() {
@@ -855,12 +859,6 @@
 			// #endif
 
 			return {
-				heightData: {
-					currentHeight: 0,
-					geneticHeight: 0,
-					targetHeight: 0,
-					probability: 0
-				},
 				logo: undefined,
 
 				tabs: [{
@@ -924,12 +922,18 @@
 				// #endif
 
 				style: '',
+				// 示例数据，可通过接口动态赋值
+				heightData: {
+					currentHeight: 165,
+					geneticHeight: 175,
+					targetHeight: 180,
+					probability: 85
+				},
+				apiBaseUrl: 'https://x.erquhealth.com/wp-json/sgtool/v1'
 			}
 		},
 
 		onLoad(options) {
-			this.initHeightData();
-
 			Util.addShareScore(options.source);
 
 			this.is_ios = (uni.getSystemInfoSync().platform == "ios");
@@ -960,6 +964,7 @@
 
 				this.refresh();
 			}
+			this.fetchUserHeightData();
 		},
 
 		onPullDownRefresh() {
@@ -1000,24 +1005,6 @@
 		// #endif
 
 		methods: {
-			async initHeightData() {
-				try {
-					const response = await uni.request({
-						url: '/api/sgtool/height',
-						method: 'GET'
-					});
-					const data = response.data;
-					this.heightData = {
-						currentHeight: data.current_height || 0,
-						geneticHeight: data.gender === 2 ? data.girl_genetic_height : data.boy_genetic_height || 0,
-						targetHeight: data.target_height || 0,
-						probability: data.prediction_probability || 0
-					};
-				} catch (error) {
-					console.error('获取身高数据失败:', error);
-				}
-			},
-
 			//----- event start -----
 			/**
 			 * 登录事件
@@ -1268,6 +1255,30 @@
 				this.pop_ad = false;
 				wx.setStorageSync(Constant.ZHUIGE_INDEX_MAXAD_LAST_TIME, new Date().getTime())
 			},
+
+			/**
+			 * 获取用户身高数据
+			 */
+			fetchUserHeightData() {
+				// 从接口获取 wp_height_user_data 数据（示例接口）
+				uni.request({
+					url: `${this.apiBaseUrl}/get_user_height_data`,
+					method: 'GET',
+					success: (res) => {
+						if (res.statusCode === 200 && res.data) {
+							const data = res.data;
+							// 根据宝宝性别选择遗传身高
+							this.geneticHeight = data.gender === 1 ? data.boy_genetic_height : data.girl_genetic_height;
+							this.currentHeight = data.current_height;
+							this.targetHeight = data.target_height;
+							this.predictionProbability = data.prediction_probability;
+						}
+					},
+					fail: (err) => {
+						console.error('获取身高数据失败', err);
+					}
+				});
+			}
 		}
 	}
 </script>
@@ -1738,5 +1749,30 @@
 	.wiki-block .zhugie-info-summary {
 		margin-bottom: 8rpx;
 	}
-	
+	.height-ai-module {
+		padding: 20px;
+		background: #FFF5E7;
+	}
+	.module-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 10px;
+	}
+	.module-title {
+		font-size: 20px;
+		font-weight: bold;
+		color: #FF6B6B;
+	}
+	.detail-link {
+		font-size: 14px;
+		color: #007aff;
+	}
+
+	/* 针对身高预测模块单独增加样式，确保其内容完整显示 */
+.height-predict-block {
+	position: relative;
+	overflow: visible;
+}
+
 </style>
