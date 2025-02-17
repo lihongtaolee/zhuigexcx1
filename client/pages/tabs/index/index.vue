@@ -25,7 +25,7 @@
 					<zhuige-height-predict
 						:currentHeight="heightData.currentHeight"
 						:geneticHeight="heightData.geneticHeight"
-						:potentialHeight="heightData.potentialHeight"
+						:targetHeight="heightData.targetHeight"
 						:probability="heightData.probability"
 					></zhuige-height-predict>
 				</view>
@@ -855,6 +855,12 @@
 			// #endif
 
 			return {
+				heightData: {
+					currentHeight: 0,
+					geneticHeight: 0,
+					targetHeight: 0,
+					probability: 0
+				},
 				logo: undefined,
 
 				tabs: [{
@@ -922,6 +928,8 @@
 		},
 
 		onLoad(options) {
+			this.initHeightData();
+
 			Util.addShareScore(options.source);
 
 			this.is_ios = (uni.getSystemInfoSync().platform == "ios");
@@ -992,6 +1000,24 @@
 		// #endif
 
 		methods: {
+			async initHeightData() {
+				try {
+					const response = await uni.request({
+						url: '/api/sgtool/height',
+						method: 'GET'
+					});
+					const data = response.data;
+					this.heightData = {
+						currentHeight: data.current_height || 0,
+						geneticHeight: data.gender === 2 ? data.girl_genetic_height : data.boy_genetic_height || 0,
+						targetHeight: data.target_height || 0,
+						probability: data.prediction_probability || 0
+					};
+				} catch (error) {
+					console.error('获取身高数据失败:', error);
+				}
+			},
+
 			//----- event start -----
 			/**
 			 * 登录事件

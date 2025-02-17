@@ -1,23 +1,24 @@
 <template>
   <view class="height-predict-container">
+    <view class="demo-tag">演示数据</view>
     <view class="astronaut-display">
-      <image class="astronaut" mode="aspectFill" src="/static/astronaut.png"></image>
+      <image class="astronaut" mode="aspectFill" src="/static/sgtoolimages/astronaut.png"></image>
       <view class="height-data">
         <view class="height-item">
-          <text class="label">实测身高</text>
-          <text class="value">{{currentHeight}} cm</text>
-        </view>
-        <view class="height-item">
           <text class="label">遗传身高</text>
-          <text class="value">{{geneticHeight}} cm</text>
+          <text class="value">{{ geneticHeight }} cm</text>
         </view>
         <view class="height-item">
-          <text class="label">可追高</text>
-          <text class="value">{{potentialHeight}} cm</text>
+          <text class="label">现在实测身高</text>
+          <text class="value">{{ currentHeight }} cm</text>
         </view>
-        <view class="probability">
-          <text class="label">达成概率</text>
-          <text class="value">{{probability}}%</text>
+        <view class="height-item">
+          <text class="label">期望成年身高</text>
+          <text class="value">{{ targetHeight }} cm</text>
+        </view>
+        <view class="height-item">
+          <text class="label">可追高概率</text>
+          <text class="value">{{ probability }}%</text>
         </view>
       </view>
     </view>
@@ -25,25 +26,30 @@
 </template>
 
 <script>
+import axios from 'axios';
 export default {
   name: 'zhuige-height-predict',
-  props: {
-    currentHeight: {
-      type: Number,
-      default: 0
-    },
-    geneticHeight: {
-      type: Number,
-      default: 0
-    },
-    potentialHeight: {
-      type: Number,
-      default: 0
-    },
-    probability: {
-      type: Number,
-      default: 0
-    }
+  data() {
+    return {
+      currentHeight: 165,
+      geneticHeight: 175,
+      targetHeight: 180,
+      probability: 85
+    };
+  },
+  mounted() {
+    axios.get('/api/sgtool/height')
+      .then(response => {
+        const data = response.data;
+        this.currentHeight = data.current_height;
+        // 根据用户性别决定遗传身高使用男孩或女孩字段，默认为男孩遗传身高
+        this.geneticHeight = (data.gender && data.gender == 2) ? data.girl_genetic_height : data.boy_genetic_height;
+        this.targetHeight = data.target_height;
+        this.probability = data.prediction_probability;
+      })
+      .catch(error => {
+        console.error('获取身高数据失败:', error);
+      });
   }
 }
 </script>
@@ -54,6 +60,18 @@ export default {
   border-radius: 20rpx;
   padding: 30rpx;
   margin: 20rpx;
+  color: #fff;
+  position: relative;
+}
+
+.demo-tag {
+  position: absolute;
+  top: 10rpx;
+  right: 10rpx;
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+  font-size: 20rpx;
   color: #fff;
 }
 
