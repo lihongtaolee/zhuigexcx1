@@ -1,8 +1,0 @@
-{
-  "navigationBarTitleText": "选择圈子",
-  "enablePullDownRefresh": false,
-  "usingComponents": {
-    "zhuige-swiper": "/components/zhuige-swiper",
-    "zhuige-nodata": "/components/zhuige-nodata"
-  }
-}

@@ -17,19 +17,13 @@
 		<view class="" :style="style">
 			<!-- 身高预测AI模块 -->
 			<view class="zhuige-cust-block height-predict-block" style="margin-bottom: 20rpx;">
-      <view class="zhuige-block">
-        <view class="zhuige-block-head">
-          <view>身高预测AI</view>
-          <view @click="openLink('/pages/sgtool/sgycai/sgycai')">详细预测</view>
-        </view>
-        <zhuige-height-predict
-          :currentHeight="heightData.currentHeight"
-          :geneticHeight="heightData.geneticHeight"
-          :targetHeight="heightData.targetHeight"
-          :probability="heightData.probability"
-        ></zhuige-height-predict>
-      </view>
-    </view>
+				<zhuige-height-predict
+					:currentHeight="heightData.currentHeight"
+					:geneticHeight="heightData.geneticHeight"
+					:targetHeight="heightData.targetHeight"
+					:probability="heightData.probability"
+				></zhuige-height-predict>
+			</view>
 
 			<!-- 轮播图区域 -->
 			<view v-if="slides && slides.length>0" class="zhuige-wide-box">
@@ -929,7 +923,7 @@
 					targetHeight: 180,
 					probability: 85
 				},
-				apiBaseUrl: 'https://x.erquhealth.com/wp-json/sgtool/v1'
+				apiBaseUrl: 'https://x.erquhealth.com/wp-json/zhuige-xcx/v1'
 			}
 		},
 
@@ -1265,13 +1259,15 @@
 					url: `${this.apiBaseUrl}/get_user_height_data`,
 					method: 'GET',
 					success: (res) => {
+						console.log('接口返回数据：', res.data); // 调试输出，检查返回数据
 						if (res.statusCode === 200 && res.data) {
 							const data = res.data;
-							// 根据宝宝性别选择遗传身高
-							this.geneticHeight = data.gender === 1 ? data.boy_genetic_height : data.girl_genetic_height;
-							this.currentHeight = data.current_height;
-							this.targetHeight = data.target_height;
-							this.predictionProbability = data.prediction_probability;
+							// 根据宝宝性别选择遗传身高，并写入 heightData 对象
+							this.heightData.geneticHeight = data.gender === 1 ? data.boy_genetic_height : data.girl_genetic_height;
+							this.heightData.currentHeight = data.current_height;
+							this.heightData.targetHeight = data.target_height;
+							this.heightData.probability = data.prediction_probability;
+							console.log('赋值后的 heightData：', this.heightData); // 调试输出
 						}
 					},
 					fail: (err) => {

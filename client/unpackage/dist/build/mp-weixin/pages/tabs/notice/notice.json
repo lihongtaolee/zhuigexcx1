@@ -1,8 +1,0 @@
-{
-  "navigationBarTitleText": "消息",
-  "enablePullDownRefresh": false,
-  "usingComponents": {
-    "uni-icons": "/uni_modules/uni-icons/components/uni-icons/uni-icons",
-    "zhuige-nodata": "/components/zhuige-nodata"
-  }
-}

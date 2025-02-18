@@ -1,7 +1,0 @@
-{
-  "navigationBarTitleText": "选择好友",
-  "enablePullDownRefresh": false,
-  "usingComponents": {
-    "zhuige-nodata": "/components/zhuige-nodata"
-  }
-}

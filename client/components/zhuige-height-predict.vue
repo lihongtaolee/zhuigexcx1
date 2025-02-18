@@ -5,7 +5,7 @@
       <text class="module-title">身高预测AI</text>
       <text class="detail-guide" @click="openDetail">详细预测</text>
     </view>
-    <!-- 图表区域（使用原生 canvas） -->
+    <!-- 图表区域（使用原生 canvas 绘制图表） -->
     <view class="chart-container">
       <canvas id="heightChart" canvas-id="heightChart" class="chart-canvas"></canvas>
     </view>
@@ -29,13 +29,14 @@
       <text class="label">可追高概率</text>
       <text class="value">{{ probability }}%</text>
     </view>
+    <!-- 地图展示区域 -->
+    <view class="astronaut-container">
+      <image class="astronaut" src="/static/sgtoolimages/astronaut.png" mode="widthFix"></image>
+    </view>
   </view>
 </template>
 
 <script>
-import axios from 'axios'
-import * as echarts from 'echarts'
-
 export default {
   name: 'zhuige-height-predict',
   props: {
@@ -58,7 +59,8 @@ export default {
   },
   data() {
     return {
-      chart: null
+      // 用于存储图表绘制时的上下文，可选
+      chartCtx: null
     }
   },
   methods: {
@@ -66,136 +68,99 @@ export default {
       // 跳转到详细预测页
       uni.navigateTo({ url: '/pages/sgtool/sgycai/sgycai' });
     },
-    // 初始化图表，使用 native canvas 节点
-    initChart(canvas, width, height, dpr) {
-      const chart = echarts.init(canvas, null, {
-        width: width,
-        height: height,
-        devicePixelRatio: dpr
-      });
-      // 生成图表配置（示例：三条折线曲线）
-      const ages = [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
-      const geneticBase = Number(this.geneticHeight) - 30;
-      const currentBase = Number(this.currentHeight) - 30;
-      const targetBase = Number(this.targetHeight) - 30;
-      const geneticData = ages.map(age => Number((geneticBase + ((age - 5) / (18 - 5)) * 30).toFixed(1)));
-      const currentData = ages.map(age => Number((currentBase + ((age - 5) / (18 - 5)) * 30).toFixed(1)));
-      const targetData = ages.map(age => Number((targetBase + ((age - 5) / (18 - 5)) * 30).toFixed(1)));
-
-      const option = {
-        color: ['#FF7F50', '#87CEFA', '#32CD32'],
-        tooltip: { trigger: 'axis' },
-        legend: {
-          data: ['遗传身高', '现在实测身高', '期望成年身高'],
-          textStyle: { color: '#fff' }
-        },
-        grid: {
-          left: '3%',
-          right: '4%',
-          bottom: '3%',
-          containLabel: true
-        },
-        xAxis: {
-          type: 'category',
-          boundaryGap: false,
-          data: ages,
-          axisLine: { lineStyle: { color: '#fff' } }
-        },
-        yAxis: {
-          type: 'value',
-          axisLine: { lineStyle: { color: '#fff' } }
-        },
-        series: [
-          { name: '遗传身高', type: 'line', data: geneticData },
-          { name: '现在实测身高', type: 'line', data: currentData },
-          { name: '期望成年身高', type: 'line', data: targetData }
-        ]
+    // 使用原生 canvas API 绘制折线图（移除了设置 canvas.width/height）
+    initChart(canvas, drawWidth, drawHeight) {
+      // ...删除：canvas.width = width; canvas.height = height;
+      
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, drawWidth, drawHeight);
+      // 定义年龄数组
+      const ages = [5,6,7,8,9,10,11,12,13,14,15,16,17,18];
+      const calcSeries = (baseValue) => {
+        const base = baseValue - 30;
+        return ages.map(age => base + ((age - 5)/(18-5))*30);
       };
-      chart.setOption(option);
-      return chart;
+      const geneticData = calcSeries(this.geneticHeight);
+      const currentData = calcSeries(this.currentHeight);
+      const targetData = calcSeries(this.targetHeight);
+      const allData = geneticData.concat(currentData, targetData);
+      const minY = Math.min(...allData);
+      const maxY = Math.max(...allData);
+      const marginLeft = 40, marginRight = 20, marginTop = 20, marginBottom = 40;
+      const chartWidth = drawWidth - marginLeft - marginRight;
+      const chartHeight = drawHeight - marginTop - marginBottom;
+      
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 1;
+      // x轴
+      ctx.beginPath();
+      ctx.moveTo(marginLeft, drawHeight - marginBottom);
+      ctx.lineTo(drawWidth - marginRight, drawHeight - marginBottom);
+      ctx.stroke();
+      // y轴
+      ctx.beginPath();
+      ctx.moveTo(marginLeft, marginTop);
+      ctx.lineTo(marginLeft, drawHeight - marginBottom);
+      ctx.stroke();
+      
+      const mapY = (value) => marginTop + (maxY - value) / (maxY - minY) * chartHeight;
+      const pointSpacing = chartWidth / (ages.length - 1);
+      const drawSeries = (data, color) => {
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        data.forEach((val, index) => {
+          const x = marginLeft + index * pointSpacing;
+          const y = mapY(val);
+          index === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+      };
+      drawSeries(geneticData, '#FF7F50');
+      drawSeries(currentData, '#87CEFA');
+      drawSeries(targetData, '#32CD32');
     },
-    // 更新图表数据（当 props 变化时调用）
-    updateChart() {
-      if (this.chart) {
-        const ages = [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
-        const geneticBase = Number(this.geneticHeight) - 30;
-        const currentBase = Number(this.currentHeight) - 30;
-        const targetBase = Number(this.targetHeight) - 30;
-        const geneticData = ages.map(age => Number((geneticBase + ((age - 5) / (18 - 5)) * 30).toFixed(1)));
-        const currentData = ages.map(age => Number((currentBase + ((age - 5) / (18 - 5)) * 30).toFixed(1)));
-        const targetData = ages.map(age => Number((targetBase + ((age - 5) / (18 - 5)) * 30).toFixed(1)));
-  
-        const option = {
-          color: ['#FF7F50', '#87CEFA', '#32CD32'],
-          tooltip: { trigger: 'axis' },
-          legend: {
-            data: ['遗传身高', '现在实测身高', '期望成年身高'],
-            textStyle: { color: '#fff' }
-          },
-          grid: {
-            left: '3%',
-            right: '4%',
-            bottom: '3%',
-            containLabel: true
-          },
-          xAxis: {
-            type: 'category',
-            boundaryGap: false,
-            data: ages,
-            axisLine: { lineStyle: { color: '#fff' } }
-          },
-          yAxis: {
-            type: 'value',
-            axisLine: { lineStyle: { color: '#fff' } }
-          },
-          series: [
-            { name: '遗传身高', type: 'line', data: geneticData },
-            { name: '现在实测身高', type: 'line', data: currentData },
-            { name: '期望成年身高', type: 'line', data: targetData }
-          ]
-        };
-        this.chart.setOption(option);
-      }
-    },
-    // 通过原生 canvas 组件初始化图表
+    // 使用 selectorQuery 获取 canvas，添加 dpr 缩放
     initNativeCanvas() {
       const query = uni.createSelectorQuery().in(this);
       query.select('#heightChart').node(res => {
         const canvas = res.node;
-        const width = res.width;
-        const height = res.height;
-        const dpr = uni.getSystemInfoSync().pixelRatio;
-        this.chart = this.initChart(canvas, width, height, dpr);
+        const dpr = uni.getSystemInfoSync().pixelRatio || 1;
+        // 设定内部绘图尺寸根据设备像素比
+        const realWidth = res.width * dpr;
+        const realHeight = res.height * dpr;
+        canvas.width = realWidth;
+        canvas.height = realHeight;
+        // 缩放绘图上下文
+        const ctx = canvas.getContext('2d');
+        ctx.scale(dpr, dpr);
+        // 使用原始获取的宽高（非乘 dpr 的值）供绘图使用
+        this.initChart(canvas, res.width, res.height);
       }).exec();
     }
   },
   mounted() {
-    // 初始化原生 canvas 图表
-    this.initNativeCanvas();
-    // 获取后端数据并更新组件数据与图表
-    axios.get('/api/sgtool/height')
-      .then(response => {
-        const data = response.data;
-        // 根据性别字段选择遗传身高（默认男孩遗传身高）
-        this.currentHeight = data.current_height;
-        this.geneticHeight = (data.gender && data.gender == 2) ? data.girl_genetic_height : data.boy_genetic_height;
-        this.targetHeight = data.target_height;
-        this.probability = data.prediction_probability;
-        this.updateChart();
-      })
-      .catch(error => {
-        console.error('获取身高数据失败:', error);
-      });
+    // 确保 canvas 渲染完成后初始化图表
+    this.$nextTick(() => {
+      this.initNativeCanvas();
+    });
   },
   watch: {
+    // 当相关属性变化时，重新绘制图表
     currentHeight() {
-      this.updateChart();
+      this.$nextTick(() => {
+        this.initNativeCanvas();
+      });
     },
     geneticHeight() {
-      this.updateChart();
+      this.$nextTick(() => {
+        this.initNativeCanvas();
+      });
     },
     targetHeight() {
-      this.updateChart();
+      this.$nextTick(() => {
+        this.initNativeCanvas();
+      });
     }
   }
 }
@@ -229,17 +194,16 @@ export default {
 /* 图表区域 */
 .chart-container {
   width: 100%;
-  height: 300rpx;
+  height: 200rpx;
   margin-bottom: 20rpx;
 }
-/* 设置 canvas 为 100% 宽高，保证初始化时有尺寸 */
 .chart-canvas {
   width: 100%;
   height: 100%;
   display: block;
 }
 
-/* 数据展示 */
+/* 数据展示区域 */
 .data-display {
   display: flex;
   justify-content: space-around;
@@ -276,5 +240,15 @@ export default {
   font-size: 36rpx;
   color: #007aff;
   font-weight: bold;
+}
+
+/* 地图图片 */
+.astronaut-container {
+  margin-top: 20rpx;
+  text-align: center;
+}
+.astronaut {
+  width: 80%;
+  max-width: 300rpx;
 }
 </style>

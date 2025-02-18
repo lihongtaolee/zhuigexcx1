@@ -1,7 +1,0 @@
-{
-  "navigationBarTitleText": "账号注销",
-  "enablePullDownRefresh": false,
-  "usingComponents": {
-    "mp-html": "/components/mp-html/mp-html"
-  }
-}
