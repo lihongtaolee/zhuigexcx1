@@ -4,11 +4,11 @@
 	  <uni-nav-bar :fixed="true" :statusBar="true" :border="false" background-color="#0863cc">
 		<view class="zhuige-top-bar" :style="style">
 		  <template v-slot:left>
-			<view v-if="logo" class="zhuige-top-logo">
-			  <image mode="heightFix" :src="logo"></image>
+			<view class="zhuige-top-logo" :class="{ 'logo-placeholder': !logo }">
+			  <image v-if="logo" mode="heightFix" :src="logo"></image>
 			</view>
 		  </template>
-		  <view class="zhuige-top-search" @click="openLink('/pages/base/search/search')">
+		  <view class="zhuige-top-search" :class="{ 'search-loaded': logo }" @click="openLink('/pages/base/search/search')">
 			<uni-icons type="search" color="#999999" size="18"></uni-icons>
 			<text>关键词...</text>
 		  </view>
@@ -180,35 +180,54 @@ export default {
 
 <style lang="scss">
 .zhuige-top-logo {
-	display: flex;
-	align-items: center;
-	margin-right: 15rpx;
-	image {
-	  height: 48rpx;
-	  width: 128rpx;
-	}
+  display: flex;
+  align-items: center;
+  margin-right: 15rpx;
+  min-width: 128rpx;
+  height: 48rpx;
+  transition: all 0.3s ease;
+
+  &.logo-placeholder {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 4rpx;
+    min-width: 128rpx;
+    height: 48rpx;
+  }
+
+  image {
+    height: 48rpx;
+    width: 128rpx;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+  }
 }
 
 .zhuige-top-search {
-	display: flex;
-	align-items: center;
-	width: 80%;
-	height: 32px;
-	padding-left: 20rpx;
-	color: #999999;
-	font-size: 28rpx;
-	border: 1rpx solid #999999;
-	border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  width: 80%;
+  height: 32px;
+  padding-left: 20rpx;
+  color: #999999;
+  font-size: 28rpx;
+  border: 1rpx solid #999999;
+  border-radius: 16rpx;
+  transition: all 0.3s ease;
+  margin-left: 0;
+
+  &.search-loaded {
+    margin-left: 0;
+  }
 }
 
 .zhuige-wide-box {
-	padding: 0 20rpx;
-	margin-bottom: 20rpx;
+  padding: 0 20rpx;
+  margin-bottom: 20rpx;
 }
 
 .height-predict-wrapper {
-	padding: 0;
-	margin: 20rpx;
+  padding: 0;
+  margin: 20rpx;
 }
 
 /* 新增作用域样式 */
