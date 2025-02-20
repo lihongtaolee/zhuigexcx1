@@ -1,0 +1,1 @@
+<view style="width:100vw;height:100vh;"><block wx:if="{{feed_id&&finder_user_name}}"><channel-video style="width:100vw;height:100vh;" object-fit="contain" feed-id="{{feed_id}}" finder-user-name="{{finder_user_name}}" autoplay="true"></channel-video></block></view>

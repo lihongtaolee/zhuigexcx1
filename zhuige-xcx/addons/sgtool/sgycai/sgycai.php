@@ -59,9 +59,15 @@ class ZhuiGe_Xcx_Sgycai {
     }
 
     public function register_rest_routes() {
-        register_rest_route( 'sgtool/v1', '/save_user_data', array(
+        register_rest_route( 'zhuige/sgtool', '/save_user_data', array(
             'methods'             => 'POST',
             'callback'            => array( $this, 'save_user_data' ),
+            'permission_callback' => '__return_true'
+        ) );
+
+        register_rest_route( 'zhuige/sgtool', '/get_user_height_data', array(
+            'methods'             => 'GET',
+            'callback'            => array( $this, 'get_user_height_data' ),
             'permission_callback' => '__return_true'
         ) );
     }
@@ -151,6 +157,55 @@ class ZhuiGe_Xcx_Sgycai {
         return array(
             'code' => 0,
             'msg'  => '保存成功'
+        );
+    }
+
+    public function get_user_height_data( WP_REST_Request $request ) {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'height_user_data';
+
+        // 获取请求中的user_id参数，如果没有则使用当前登录用户ID
+        $user_id = $request->get_param('user_id');
+        if (!$user_id) {
+            $user_id = get_current_user_id();
+        }
+
+        if (!$user_id) {
+            return array(
+                'code' => 401,
+                'msg'  => '请先登录'
+            );
+        }
+
+        // 获取用户最新的身高数据记录
+        $result = $wpdb->get_row(
+            $wpdb->prepare(
+                "SELECT * FROM {$table_name} WHERE user_id = %d ORDER BY id DESC LIMIT 1",
+                $user_id
+            ),
+            ARRAY_A
+        );
+
+        if (!$result) {
+            return array(
+                'code' => 404,
+                'msg'  => '未找到身高数据'
+            );
+        }
+
+        return array(
+            'code' => 0,
+            'msg'  => '获取成功',
+            'data' => array(
+                'gender' => intval($result['gender']),
+                'current_height' => floatval($result['current_height']),
+                'boy_genetic_height' => floatval($result['boy_genetic_height']),
+                'girl_genetic_height' => floatval($result['girl_genetic_height']),
+                'target_height' => floatval($result['target_height']),
+                'prediction_probability' => floatval($result['prediction_probability']) * 100,
+                'baobaoname' => $result['baobaoname'],
+                'create_time' => $result['create_time']
+            )
         );
     }
 

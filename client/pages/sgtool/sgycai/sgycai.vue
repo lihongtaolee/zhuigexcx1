@@ -121,7 +121,7 @@
         errorMessage: '',
         isSubmitting: false,
         today: new Date().toISOString().split('T')[0],
-        apiBaseUrl: 'https://x.erquhealth.com/wp-json/zhuige-xcx/v1',
+        apiBaseUrl: 'https://x.erquhealth.com/wp-json/zhuige/sgtool',
         userId: null
       }
     },
