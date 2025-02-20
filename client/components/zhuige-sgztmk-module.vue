@@ -2,13 +2,13 @@
   <view class="sgztmk-module-wrapper">
     <!-- 专题模块头部：icon+大标题 -->
     <view class="module-header">
-      <image class="header-icon" :src="leftModule.icon || '/static/coupon.png'" mode="aspectFit"></image>
-      <text class="header-title">{{leftModule.moduleTitle || '网商贷·经营周转'}}</text>
+      <image class="header-icon" :src="leftModule.icon" mode="aspectFit"></image>
+      <text class="header-title">{{leftModule.title}}</text>
     </view>
 
     <view class="sgztmk-module-container" v-show="isLoaded">
       <!-- 左侧模块 -->
-      <view class="left-module" @click="handleClick(leftModule.link)" :style="{'background-color': leftModule.bgColor || '#e6f7ff'}">
+      <view class="left-module" @click="handleClick(leftModule.link)" :style="{'background-color': leftModule.bgColor}">
         <!-- 新增：圆形数值展示区域 -->
         <view class="value-circle" v-if="leftModule.value !== undefined">
           <text class="value-text">{{leftModule.value}}</text>
@@ -26,7 +26,7 @@
       <!-- 右侧模块容器 -->
       <view class="right-modules">
         <!-- 右上模块 -->
-        <view class="right-module" @click="handleClick(rightTopModule.link)" :style="{'background-color': rightTopModule.bgColor || '#f7f7f7'}">
+        <view class="right-module" @click="handleClick(rightTopModule.link)" :style="{'background-color': rightTopModule.bgColor}">
           <view class="module-content">
             <text class="module-title">{{ rightTopModule.title }}</text>
             <text class="module-desc">{{ rightTopModule.description }}</text>
@@ -38,7 +38,7 @@
         </view>
 
         <!-- 右下模块 -->
-        <view class="right-module" @click="handleClick(rightBottomModule.link)" :style="{'background-color': rightBottomModule.bgColor || '#f7f7f7'}">
+        <view class="right-module" @click="handleClick(rightBottomModule.link)" :style="{'background-color': rightBottomModule.bgColor}">
           <view class="module-content">
             <text class="module-title">{{ rightBottomModule.title }}</text>
             <text class="module-desc">{{ rightBottomModule.description }}</text>
@@ -67,15 +67,14 @@ export default {
       type: Object,
       required: true,
       default: () => ({
-        moduleTitle: '',
-        icon: '',
         title: '',
+        icon: '',
         description: '',
         image: '',
         buttonText: '',
         link: '',
         value: undefined,
-        bgColor: '',
+        bgColor: '#F0F8FF',
         valueApi: ''
       })
     },
@@ -88,7 +87,7 @@ export default {
         image: '',
         buttonText: '',
         link: '',
-        bgColor: ''
+        bgColor: '#F5F5F5'
       })
     },
     rightBottomModule: {

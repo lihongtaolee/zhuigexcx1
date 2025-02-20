@@ -97,6 +97,9 @@ require ZHUIGE_XCX_BASE_DIR . 'includes/zhuige-xcx-user-column.php';
 require ZHUIGE_XCX_BASE_DIR . 'includes/zhuige-xcx-dashboard.php';
 require ZHUIGE_XCX_BASE_DIR . 'includes/zhuige-xcx-plugins.php';
 
+// 引入专题模块配置
+require_once ZHUIGE_XCX_ADDONS_DIR . 'sgtool/sgztmk/sgztmk.php';
+
 foreach (ZhuiGe_Xcx_Addon::$post_types as $post_type) {
     $file_path = ZHUIGE_XCX_ADDONS_DIR . $post_type;
     if (file_exists($file_path)) {

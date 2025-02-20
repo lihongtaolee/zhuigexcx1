@@ -38,14 +38,13 @@
 	  </view>
 
     <!-- 身高专题模块 -->
-    <view class="zhuige-wide-box" v-if="!isLoading && sgztmkModules.length > 0">
+    <view class="zhuige-wide-box" v-if="!isModulesLoading && sgztmkModules && sgztmkModules.length > 0">
       <zhuige-sgztmk-module
         v-for="(module, index) in sgztmkModules"
         :key="module.id"
         :leftModule="{
-          moduleTitle: module.title,
-          icon: module.icon,
           title: module.left_module.title,
+          icon: module.icon,
           description: module.left_module.description,
           image: module.left_module.image,
           buttonText: module.left_module.button_text,
@@ -101,12 +100,14 @@ export default {
 		  geneticHeight: 175,
 		  targetHeight: 180,
 		  probability: 85,
-		  baobaoname: '演示宝宝'
+		  baobaoname: '演示宝宝',
+		  updateTime: ''
 		},
 		apiBaseUrl: 'https://x.erquhealth.com/wp-json/zhuige/sgtool',
 		slides: [],
 		icons: [],
-		sgztmkModules: [] // 新增：身高专题模块数据
+		sgztmkModules: [], // 新增：身高专题模块数据
+		isModulesLoading: true // 新增：身高专题模块加载状态
 	  }
 	},
 	onLoad() {
@@ -157,10 +158,21 @@ export default {
 	  },
 	  // 新增：获取身高专题模块数据
 	  fetchSgztmkModules() {
+		this.isModulesLoading = true;
 		Rest.post(Api.URL('sgtool', 'get_sgztmk_modules'))
 		  .then(res => {
-			if (res.data && res.data.modules) {
+			if (res.data && Array.isArray(res.data.modules)) {
 			  this.sgztmkModules = res.data.modules;
+			} else {
+			  this.sgztmkModules = [];
+			  console.log('No modules data available');
 			}
 		  })
-		  .catch
+		  .catch(err => {
+			console.log('Failed to fetch sgztmk modules:', err);
+			this.sgztmkModules = [];
+		  })
+		  .finally(() => {
+			this.isModulesLoading = false;
+		  });
+	  },
