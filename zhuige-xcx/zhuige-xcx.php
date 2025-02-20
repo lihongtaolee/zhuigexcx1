@@ -32,6 +32,12 @@ function activate_zhuige_xcx()
     // 调用 sgycai 模块激活逻辑，确保执行 SQL 文件中的建表命令
     require_once ZHUIGE_XCX_ADDONS_DIR . 'sgtool/sgycai/sgycai.php';
     ZhuiGe_Xcx_Sgycai::activate();
+
+    // 调用 sgztmk 模块激活逻辑，创建专题模块配置表
+    require_once ZHUIGE_XCX_ADDONS_DIR . 'sgtool/sgztmk/sgztmk.php';
+    if (class_exists('ZhuiGe_Xcx_Sgztmk')) {
+        ZhuiGe_Xcx_Sgztmk::activate();
+    }
 }
 
 function deactivate_zhuige_xcx()

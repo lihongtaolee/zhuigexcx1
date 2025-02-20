@@ -35,3 +35,32 @@ CREATE TABLE `wp_height_predictions` (
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='遗传身高基准表';
+
+-- 身高专题模块配置表
+CREATE TABLE `wp_zhuige_xcx_sgztmk` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `title` varchar(100) NOT NULL COMMENT '模块标题',
+  `icon` varchar(255) DEFAULT NULL COMMENT '模块图标',
+  `left_title` varchar(100) DEFAULT NULL COMMENT '左侧标题',
+  `left_desc` text DEFAULT NULL COMMENT '左侧描述',
+  `left_image` varchar(255) DEFAULT NULL COMMENT '左侧图片',
+  `left_button` varchar(50) DEFAULT NULL COMMENT '左侧按钮文字',
+  `left_link` varchar(255) DEFAULT NULL COMMENT '左侧链接',
+  `left_value_api` varchar(255) DEFAULT NULL COMMENT '左侧数值接口路径',
+  `left_bg_color` varchar(20) DEFAULT 'rgba(24, 144, 255, 0.1)' COMMENT '左侧背景色',
+  `right_top_title` varchar(100) DEFAULT NULL COMMENT '右上标题',
+  `right_top_desc` text DEFAULT NULL COMMENT '右上描述',
+  `right_top_image` varchar(255) DEFAULT NULL COMMENT '右上图片',
+  `right_top_button` varchar(50) DEFAULT NULL COMMENT '右上按钮文字',
+  `right_top_link` varchar(255) DEFAULT NULL COMMENT '右上链接',
+  `right_top_bg_color` varchar(20) DEFAULT 'rgba(0, 0, 0, 0.1)' COMMENT '右上背景色',
+  `right_bottom_title` varchar(100) DEFAULT NULL COMMENT '右下标题',
+  `right_bottom_desc` text DEFAULT NULL COMMENT '右下描述',
+  `right_bottom_image` varchar(255) DEFAULT NULL COMMENT '右下图片',
+  `right_bottom_button` varchar(50) DEFAULT NULL COMMENT '右下按钮文字',
+  `right_bottom_link` varchar(255) DEFAULT NULL COMMENT '右下链接',
+  `right_bottom_bg_color` varchar(20) DEFAULT 'rgba(0, 0, 0, 0.1)' COMMENT '右下背景色',
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='身高专题模块配置表';
