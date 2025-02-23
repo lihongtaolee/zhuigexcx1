@@ -4,6 +4,10 @@
   "enablePullDownRefresh": true,
   "usingComponents": {
     "uni-nav-bar": "/uni_modules/uni-nav-bar/components/uni-nav-bar/uni-nav-bar",
-    "uni-icons": "/uni_modules/uni-icons/components/uni-icons/uni-icons"
+    "uni-icons": "/uni_modules/uni-icons/components/uni-icons/uni-icons",
+    "zhuige-swiper": "/components/zhuige-swiper",
+    "zhuige-icons": "/components/zhuige-icons",
+    "zhuige-height-predict": "/components/zhuige-height-predict",
+    "zhuige-sgztmk-module": "/components/zhuige-sgztmk-module"
   }
 }

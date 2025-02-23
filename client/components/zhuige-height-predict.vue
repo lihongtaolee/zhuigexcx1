@@ -50,23 +50,23 @@ export default {
   props: {
     currentHeight: {
       type: Number,
-      default: 165
+      required: true
     },
     geneticHeight: {
       type: Number,
-      default: 175
+      required: true
     },
     targetHeight: {
       type: Number,
-      default: 180
+      required: true
     },
     probability: {
       type: Number,
-      default: 85
+      required: true
     },
     baobaoname: {
       type: String,
-      default: '演示宝宝'
+      required: true
     },
     updateTime: {
       type: String,

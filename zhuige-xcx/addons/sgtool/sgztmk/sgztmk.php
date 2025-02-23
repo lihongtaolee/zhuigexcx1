@@ -496,9 +496,15 @@ class ZhuiGe_Xcx_Sgztmk {
         </div>
         <?php
     }
-}
-
     public function register_rest_routes() {
+        // 注册获取自定义数据的API路由
+        register_rest_route('zhuige/sgtool', '/get_custom_data', array(
+            'methods' => 'GET',
+            'callback' => array($this, 'get_custom_data'),
+            'permission_callback' => '__return_true'
+        ));
+
+        // 注册获取身高专题模块数据的API路由
         register_rest_route('zhuige/sgtool', '/get_sgztmk_modules', array(
             'methods' => 'POST',
             'callback' => array($this, 'get_sgztmk_modules'),
@@ -506,47 +512,133 @@ class ZhuiGe_Xcx_Sgztmk {
         ));
     }
 
+    /**
+     * 获取自定义数据接口
+     * 
+     * @param WP_REST_Request $request
+     * @return array
+     */
+    public function get_custom_data(WP_REST_Request $request) {
+        global $wpdb;
+
+        // 获取请求参数
+        $table = $request->get_param('table');
+        $fields = $request->get_param('fields'); // 格式：field1,field2,field3
+        $conditions = $request->get_param('conditions'); // 格式：field1:value1,field2:value2
+        $user_id = $request->get_param('user_id');
+
+        // 验证必要参数
+        if (empty($table) || empty($fields)) {
+            return array(
+                'code' => 400,
+                'msg' => '缺少必要参数'
+            );
+        }
+
+        // 安全检查：确保表名是以wp_开头
+        if (strpos($table, $wpdb->prefix) !== 0) {
+            $table = $wpdb->prefix . $table;
+        }
+
+        // 构建查询字段
+        $select_fields = '*';
+        if ($fields !== '*') {
+            $field_array = explode(',', $fields);
+            $safe_fields = array_map('sanitize_text_field', $field_array);
+            $select_fields = implode(',', $safe_fields);
+        }
+
+        // 构建查询条件
+        $where = array();
+        $where_values = array();
+
+        // 添加用户ID条件（如果提供）
+        if ($user_id) {
+            $where[] = 'user_id = %d';
+            $where_values[] = $user_id;
+        }
+
+        // 处理其他查询条件
+        if ($conditions) {
+            $condition_pairs = explode(',', $conditions);
+            foreach ($condition_pairs as $pair) {
+                $parts = explode(':', $pair);
+                if (count($parts) === 2) {
+                    $field = sanitize_text_field($parts[0]);
+                    $value = sanitize_text_field($parts[1]);
+                    $where[] = "`$field` = %s";
+                    $where_values[] = $value;
+                }
+            }
+        }
+
+        // 构建完整的SQL查询
+        $sql = "SELECT $select_fields FROM $table";
+        if (!empty($where)) {
+            $sql .= ' WHERE ' . implode(' AND ', $where);
+        }
+
+        // 执行查询
+        $query = !empty($where_values) ? $wpdb->prepare($sql, $where_values) : $sql;
+        $result = $wpdb->get_results($query, ARRAY_A);
+
+        if ($wpdb->last_error) {
+            return array(
+                'code' => 500,
+                'msg' => '查询执行失败',
+                'error' => $wpdb->last_error
+            );
+        }
+
+        return array(
+            'code' => 200,
+            'msg' => '获取成功',
+            'data' => $result
+        );
+    }
+
     public function get_sgztmk_modules(WP_REST_Request $request) {
         global $wpdb;
         $table_name = $wpdb->prefix . 'height_sgztmk';
-        
         $results = $wpdb->get_results("SELECT * FROM {$table_name}", ARRAY_A);
         $modules = array();
-        
-        foreach ($results as $row) {
-            $module = array(
-                'id' => $row['id'],
-                'title' => $row['title'],
-                'icon' => $row['icon'],
-                'left_module' => array(
-                    'title' => $row['left_title'],
-                    'description' => $row['left_desc'],
-                    'image' => $row['left_image'],
-                    'button_text' => $row['left_button'],
-                    'link' => $row['left_link'],
-                    'value_api' => $row['left_value_api'],
-                    'bg_color' => $row['left_bg_color']
-                ),
-                'right_top_module' => array(
-                    'title' => $row['right_top_title'],
-                    'description' => $row['right_top_desc'],
-                    'image' => $row['right_top_image'],
-                    'button_text' => $row['right_top_button'],
-                    'link' => $row['right_top_link'],
-                    'bg_color' => $row['right_top_bg_color']
-                ),
-                'right_bottom_module' => array(
-                    'title' => $row['right_bottom_title'],
-                    'description' => $row['right_bottom_desc'],
-                    'image' => $row['right_bottom_image'],
-                    'button_text' => $row['right_bottom_button'],
-                    'link' => $row['right_bottom_link'],
-                    'bg_color' => $row['right_bottom_bg_color']
-                )
-            );
-            $modules[] = $module;
+
+        if ($results) {
+            foreach ($results as $row) {
+                $module = array(
+                    'id' => $row['id'],
+                    'title' => $row['title'],
+                    'icon' => $row['icon'],
+                    'left_module' => array(
+                        'title' => $row['left_title'],
+                        'description' => $row['left_desc'],
+                        'image' => $row['left_image'],
+                        'button_text' => $row['left_button'],
+                        'link' => $row['left_link'],
+                        'value_api' => $row['left_value_api'],
+                        'bg_color' => $row['left_bg_color']
+                    ),
+                    'right_top_module' => array(
+                        'title' => $row['right_top_title'],
+                        'description' => $row['right_top_desc'],
+                        'image' => $row['right_top_image'],
+                        'button_text' => $row['right_top_button'],
+                        'link' => $row['right_top_link'],
+                        'bg_color' => $row['right_top_bg_color']
+                    ),
+                    'right_bottom_module' => array(
+                        'title' => $row['right_bottom_title'],
+                        'description' => $row['right_bottom_desc'],
+                        'image' => $row['right_bottom_image'],
+                        'button_text' => $row['right_bottom_button'],
+                        'link' => $row['right_bottom_link'],
+                        'bg_color' => $row['right_bottom_bg_color']
+                    )
+                );
+                $modules[] = $module;
+            }
         }
-        
+
         return array(
             'code' => 0,
             'msg' => '获取成功',
@@ -555,5 +647,6 @@ class ZhuiGe_Xcx_Sgztmk {
             )
         );
     }
+}
 
 ZhuiGe_Xcx_Sgztmk::getInstance();

@@ -1,17 +1,18 @@
 <template>
   <view class="sgztmk-module-wrapper">
-    <!-- 专题模块头部：icon+大标题 -->
+    <!-- 专题模块头部：icon + 大标题 -->
     <view class="module-header">
       <image class="header-icon" :src="leftModule.icon" mode="aspectFit"></image>
-      <text class="header-title">{{leftModule.title}}</text>
+      <text class="header-title">{{ moduleTitle }}</text>
     </view>
 
+    <!-- 整个模块内容容器 -->
     <view class="sgztmk-module-container" v-show="isLoaded">
       <!-- 左侧模块 -->
-      <view class="left-module" @click="handleClick(leftModule.link)" :style="{'background-color': leftModule.bgColor}">
-        <!-- 新增：圆形数值展示区域 -->
-        <view class="value-circle" v-if="leftModule.value !== undefined">
-          <text class="value-text">{{leftModule.value}}</text>
+      <view class="left-module" @click="handleClick(leftModule.link)" :style="{ 'background-color': leftModule.bgColor }">
+        <!-- 显示圆形数值区域，居中显示 -->
+        <view class="value-circle" v-if="leftModule.value">
+          <text class="value-text">{{ Math.round(leftModule.value) }}</text>
         </view>
         <view class="module-content">
           <text class="module-title">{{ leftModule.title }}</text>
@@ -20,13 +21,20 @@
             <text>{{ leftModule.buttonText }}</text>
           </view>
         </view>
-        <image class="module-image" :src="leftModule.image" mode="aspectFit" lazy-load @load="handleImageLoad"></image>
+        <image
+          v-if="leftModule.image"
+          class="module-image"
+          :src="leftModule.image"
+          mode="aspectFit"
+          lazy-load
+          @load="handleImageLoad"
+        ></image>
       </view>
 
       <!-- 右侧模块容器 -->
       <view class="right-modules">
         <!-- 右上模块 -->
-        <view class="right-module" @click="handleClick(rightTopModule.link)" :style="{'background-color': rightTopModule.bgColor}">
+        <view class="right-module" @click="handleClick(rightTopModule.link)" :style="{ 'background-color': rightTopModule.bgColor }">
           <view class="module-content">
             <text class="module-title">{{ rightTopModule.title }}</text>
             <text class="module-desc">{{ rightTopModule.description }}</text>
@@ -34,11 +42,18 @@
               <text>{{ rightTopModule.buttonText }}</text>
             </view>
           </view>
-          <image class="module-image" :src="rightTopModule.image" mode="aspectFit" lazy-load @load="handleImageLoad"></image>
+          <image
+            v-if="rightTopModule.image"
+            class="module-image"
+            :src="rightTopModule.image"
+            mode="aspectFit"
+            lazy-load
+            @load="handleImageLoad"
+          ></image>
         </view>
 
         <!-- 右下模块 -->
-        <view class="right-module" @click="handleClick(rightBottomModule.link)" :style="{'background-color': rightBottomModule.bgColor}">
+        <view class="right-module" @click="handleClick(rightBottomModule.link)" :style="{ 'background-color': rightBottomModule.bgColor }">
           <view class="module-content">
             <text class="module-title">{{ rightBottomModule.title }}</text>
             <text class="module-desc">{{ rightBottomModule.description }}</text>
@@ -46,7 +61,14 @@
               <text>{{ rightBottomModule.buttonText }}</text>
             </view>
           </view>
-          <image class="module-image" :src="rightBottomModule.image" mode="aspectFit" lazy-load @load="handleImageLoad"></image>
+          <image
+            v-if="rightBottomModule.image"
+            class="module-image"
+            :src="rightBottomModule.image"
+            mode="aspectFit"
+            lazy-load
+            @load="handleImageLoad"
+          ></image>
         </view>
       </view>
     </view>
@@ -63,6 +85,11 @@ export default {
     }
   },
   props: {
+    moduleTitle: {
+      type: String,
+      required: true,
+      default: ''
+    },
     leftModule: {
       type: Object,
       required: true,
@@ -74,8 +101,7 @@ export default {
         buttonText: '',
         link: '',
         value: undefined,
-        bgColor: '#F0F8FF',
-        valueApi: ''
+        bgColor: '#F0F8FF'
       })
     },
     rightTopModule: {
@@ -103,43 +129,107 @@ export default {
       })
     }
   },
+  computed: {
+    expectedImages() {
+      let count = 0;
+      if (this.leftModule.image) count++;
+      if (this.rightTopModule.image) count++;
+      if (this.rightBottomModule.image) count++;
+      return count;
+    }
+  },
   methods: {
     handleClick(link) {
-      if (link) {
+      console.log('[身高专题模块] 点击模块，链接类型:', typeof link, '链接内容:', link);
+      if (!link) return;
+      
+      if (typeof link === 'object' && link.type === 'miniprogram') {
+        console.log('[身高专题模块] 准备跳转小程序:', link.appId);
+        uni.navigateToMiniProgram({
+          appId: link.appId,
+          path: link.path,
+          timeout: 10000,
+          success: () => {
+            console.log('[身高专题模块] 跳转小程序成功:', link.appId);
+          },
+          fail: (err) => {
+            console.error('[身高专题模块] 跳转小程序失败:', err);
+            uni.showToast({
+              title: '跳转失败，请重试',
+              icon: 'none',
+              duration: 2000
+            });
+          }
+        });
+        return;
+      }
+      
+      if (link.startsWith('/pages/')) {
+        const cleanLink = link.replace(/\.vue$/, '');
+        const maxRetries = 3;
+        let retryCount = 0;
+      
+        const tryNavigate = () => {
+          uni.navigateTo({
+            url: cleanLink,
+            timeout: 10000,
+            success: () => {
+              console.log('页面跳转成功');
+            },
+            fail: (err) => {
+              console.error('页面跳转失败:', err);
+              if (retryCount < maxRetries) {
+                retryCount++;
+                console.log(`重试第${retryCount}次`);
+                setTimeout(tryNavigate, 1000);
+              } else {
+                uni.showToast({
+                  title: '跳转失败，请稍后再试',
+                  icon: 'none',
+                  duration: 2000
+                });
+                uni.reLaunch({
+                  url: cleanLink,
+                  fail: (reLaunchErr) => {
+                    console.error('reLaunch也失败了:', reLaunchErr);
+                  }
+                });
+              }
+            }
+          });
+        };
+      
+        tryNavigate();
+      } else if (link.startsWith('http://') || link.startsWith('https://')) {
         uni.navigateTo({
-          url: link
+          url: `/pages/base/webview/webview?url=${encodeURIComponent(link)}`,
+          timeout: 10000,
+          fail: (err) => {
+            console.error('链接跳转失败:', err);
+            uni.showToast({
+              title: '链接跳转失败，请重试',
+              icon: 'none',
+              duration: 2000
+            });
+          }
         });
       }
     },
     handleImageLoad() {
       this.loadedImages++;
-      if (this.loadedImages === 3) { // 所有图片加载完成
+      console.log('[身高专题模块] 图片加载进度:', this.loadedImages, '/', this.expectedImages);
+      if (this.loadedImages >= this.expectedImages) {
         this.isLoaded = true;
-      }
-    },
-    async fetchValue() {
-      if (this.leftModule.valueApi) {
-        try {
-          const response = await uni.request({
-            url: this.leftModule.valueApi,
-            method: 'GET'
-          });
-          if (response.data && response.data.value !== undefined) {
-            this.leftModule.value = Math.min(100, Math.max(0, response.data.value));
-          }
-        } catch (error) {
-          console.error('获取数值失败:', error);
-        }
+        console.log('[身高专题模块] 所有图片加载完成');
       }
     }
   },
   created() {
-    // 如果没有图片，直接显示模块
-    if (!this.leftModule.image && !this.rightTopModule.image && !this.rightBottomModule.image) {
+    console.log('[身高专题模块] 组件创建');
+    if (this.expectedImages === 0) {
       this.isLoaded = true;
+      console.log('[身高专题模块] 无图片模式，直接显示');
     }
-    // 获取左侧数值
-    this.fetchValue();
   }
 };
 </script>
@@ -149,20 +239,20 @@ export default {
   background: #fff;
   border-radius: 24rpx;
   overflow: hidden;
+  margin-bottom: 20rpx;
 }
 
-/* 专题模块头部 */
 .module-header {
   display: flex;
   align-items: center;
-  padding: 20rpx;
-  margin-bottom: 0;
+  padding: 10rpx; // 缩小内边距
+  margin-bottom: 5rpx; // 缩小标题与内容的间距
 }
 
 .header-icon {
   width: 40rpx;
   height: 40rpx;
-  margin-right: 10rpx;
+  margin-right: 5rpx; // 缩小图标与标题之间的间距
 }
 
 .header-title {
@@ -171,15 +261,13 @@ export default {
   font-weight: normal;
 }
 
-/* 主体模块容器 */
 .sgztmk-module-container {
   display: flex;
-  gap: 20rpx;
-  padding: 20rpx;
+  gap: 10rpx; // 缩小左右模块间隔
+  padding: 10rpx; // 缩小内边距
   height: 420rpx;
 }
 
-/* 左侧模块 */
 .left-module {
   flex: 1;
   height: 100%;
@@ -188,41 +276,34 @@ export default {
   overflow: hidden;
 }
 
-/* 新增：圆形数值展示区域 */
 .value-circle {
   position: absolute;
-  top: 20rpx;
-  right: 20rpx;
-  width: 100rpx;
-  height: 100rpx;
-  background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.6));
-  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  box-shadow: 4rpx 4rpx 10rpx rgba(0,0,0,0.1),
-              -4rpx -4rpx 10rpx rgba(255,255,255,0.5);
   z-index: 3;
 }
 
 .value-text {
-  font-size: 36rpx;
+  font-size: 80rpx;
   font-weight: bold;
-  background: linear-gradient(135deg, #1890ff, #096dd9);
-  -webkit-background-clip: text;
-  color: transparent;
+  color: #1890ff;
+  text-shadow: 2rpx 2rpx 4rpx rgba(0, 0, 0, 0.2);
+  transform: translateY(-4rpx);
 }
 
-/* 右侧模块容器 */
 .right-modules {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 20rpx;
+  gap: 10rpx; // 缩小右侧模块间隔
   height: 100%;
 }
 
-/* 右侧单个模块 */
 .right-module {
   flex: 1;
   border-radius: 16rpx;
@@ -230,50 +311,66 @@ export default {
   overflow: hidden;
 }
 
-/* 模块内容 */
 .module-content {
   position: absolute;
   z-index: 2;
-  padding: 20rpx;
+  padding: 10rpx; // 缩小内容区域内边距
   width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+  align-items: flex-start; // 内容靠左上对齐
   box-sizing: border-box;
+  gap: 8rpx; // 缩小标题、描述、按钮之间的间距
 }
 
 .module-title {
   font-size: 28rpx;
   font-weight: normal;
   color: #000;
-  margin-bottom: 10rpx;
 }
 
 .module-desc {
   font-size: 24rpx;
+  color: #0863cc;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.left-module .module-desc {
   color: #666;
-  margin-bottom: 20rpx;
+  text-decoration: none;
+  margin-bottom: 0; // 去除默认下边距
 }
 
 .module-button {
-  display: inline-block;
-  padding: 8rpx 20rpx;
-  background: rgba(0,0,0,0.1);
+  display: inline-flex;
+  padding: 6rpx 16rpx;
+  background: #0863cc;
   border-radius: 20rpx;
+  align-self: flex-start;
 }
 
 .module-button text {
   font-size: 24rpx;
-  color: #333;
+  color: #fff;
+  white-space: nowrap;
 }
 
 .module-image {
   position: absolute;
-  right: 20rpx;
-  bottom: 20rpx;
+  right: 10rpx; // 调整图片位置
+  bottom: 10rpx;
   width: 120rpx;
   height: 120rpx;
   z-index: 1;
+}
+
+.left-module .module-image {
+  right: 50%;
+  transform: translateX(50%);
+  width: 140rpx;
+  height: 140rpx;
 }
 </style>
