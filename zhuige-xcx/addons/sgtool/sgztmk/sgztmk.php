@@ -49,7 +49,6 @@ class ZhuiGe_Xcx_Sgztmk {
 
         // 保存设置
         if (isset($_POST['zhuige_xcx_sgztmk_save'])) {
-            error_log('[ZhuiGe_Xcx_Sgztmk] 保存设置开始');
             global $wpdb;
             $table_name = $wpdb->prefix . 'height_sgztmk';
             $modules = [];
@@ -124,13 +123,11 @@ class ZhuiGe_Xcx_Sgztmk {
                     )
                 );
                 
-                if ($wpdb->last_error) {
-                    error_log('[ZhuiGe_Xcx_Sgztmk] 数据库插入错误：' . $wpdb->last_error);
-                }
+
             }
             
             echo '<div class="updated"><p><strong>设置已保存</strong></p></div>';
-            error_log('[ZhuiGe_Xcx_Sgztmk] 保存设置结束');
+
         }
 
         // 从数据表获取当前配置
@@ -172,7 +169,7 @@ class ZhuiGe_Xcx_Sgztmk {
             );
             $modules[] = $module;
         }
-        error_log('[ZhuiGe_Xcx_Sgztmk] 获取模块配置：' . print_r($modules, true));
+
         ?>
         <div class="wrap">
             <h1>身高专题模块管理</h1>

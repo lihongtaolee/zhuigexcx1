@@ -64,7 +64,7 @@
             <view class="input-group">
               <text>测量时间:</text>
               <!-- 给 picker 添加 ref 便于调试 -->
-              <picker ref="datetimePicker" class="cute-input" mode="date" :value="measureTime" @change="onMeasureTimeChange">
+              <picker ref="datetimePicker" class="cute-input" mode="date" :value="measureTime" :end="today" @change="onMeasureTimeChange">
                 <view>{{ measureTime || '请选择测量时间' }}</view>
               </picker>
             </view>
@@ -130,7 +130,6 @@
         this.birthday = e.detail.value;
       },
       onMeasureTimeChange(e) {
-        console.log("onMeasureTimeChange event:", e.detail.value);
         this.measureTime = e.detail.value;
       },
       onCityChange(e) {
@@ -139,10 +138,8 @@
       },
       async checkLoginStatus() {
         let user = Auth.getUser();
-        console.log('Auth.getUser():', user);
         if (!user || !user.token) {
           user = uni.getStorageSync('user');
-          console.log('uni.getStorageSync("user"):', user);
         }
         if (!user || !user.token) {
           wx.showModal({

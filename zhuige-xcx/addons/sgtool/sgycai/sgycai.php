@@ -31,18 +31,12 @@ class ZhuiGe_Xcx_Sgycai {
                 $sql = str_replace( 'wp_', $wpdb->prefix, $sql );
                 require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
                 $result = dbDelta( $sql );
-                error_log( '[ZhuiGe_Xcx_Sgycai] dbDelta 执行结果：' . print_r( $result, true ) );
                 $table_name = $wpdb->prefix . 'height_user_data';
-                if ( $wpdb->get_var( "SHOW TABLES LIKE '{$table_name}'" ) != $table_name ) {
-                    error_log( "[ZhuiGe_Xcx_Sgycai] 数据表 {$table_name} 创建失败" );
-                } else {
-                    error_log( "[ZhuiGe_Xcx_Sgycai] 数据表 {$table_name} 已创建" );
-                }
             } else {
-                error_log( "[ZhuiGe_Xcx_Sgycai] 无法读取 SQL 文件内容：{$sql_file}" );
+
             }
         } else {
-            error_log( "[ZhuiGe_Xcx_Sgycai] SQL 文件不存在：{$sql_file}" );
+
         }
     }
 
@@ -81,7 +75,6 @@ class ZhuiGe_Xcx_Sgycai {
         if ( empty( $data['baobaoname'] ) || empty( $data['gender'] ) || empty( $data['birthday'] ) ||
              empty( $data['current_height'] ) || empty( $data['father_height'] ) ||
              empty( $data['mother_height'] ) || empty( $data['city'] ) ) {
-            error_log("必填字段不全，接收到的数据：" . print_r($data, true));
             return array(
                 'code' => 400,
                 'msg'  => '请填写必填字段'
@@ -90,9 +83,7 @@ class ZhuiGe_Xcx_Sgycai {
 
         // 直接使用传入的 user_id 或 get_current_user_id()
         $user_id = isset($data['user_id']) ? intval($data['user_id']) : get_current_user_id();
-        error_log("使用的用户ID: " . $user_id);
         if ( ! $user_id ) {
-            error_log("无有效用户，返回请先登录");
             return array(
                 'code' => 401,
                 'msg'  => '请先登录'
@@ -124,7 +115,7 @@ class ZhuiGe_Xcx_Sgycai {
         } else {
             $prediction_probability = null;
         }
-        error_log("计算结果: boy_genetic={$boy_genetic}, girl_genetic={$girl_genetic}, prediction_height={$prediction_height}, prediction_probability={$prediction_probability}");
+
 
         $insert_data = array(
             'user_id'                => $user_id,
@@ -147,13 +138,12 @@ class ZhuiGe_Xcx_Sgycai {
 
         $result = $wpdb->insert( $table_name, $insert_data );
         if ( $result === false ) {
-            error_log("保存数据失败，插入数据：" . print_r( $insert_data, true ));
             return array(
                 'code' => 500,
                 'msg'  => '保存失败'
             );
         }
-        error_log("保存数据成功，用户ID：{$user_id}");
+
         return array(
             'code' => 0,
             'msg'  => '保存成功'

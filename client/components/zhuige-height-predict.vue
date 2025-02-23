@@ -74,42 +74,18 @@ export default {
     }
   },
   watch: {
-    currentHeight(newVal) {
-      console.log('身高预测组件：当前身高更新为', newVal);
-    },
-    geneticHeight(newVal) {
-      console.log('身高预测组件：遗传身高更新为', newVal);
-    },
-    targetHeight(newVal) {
-      console.log('身高预测组件：目标身高更新为', newVal);
-    },
-    probability(newVal) {
-      console.log('身高预测组件：可追高概率更新为', newVal);
-    },
-    baobaoname(newVal) {
-      console.log('身高预测组件：宝宝名称更新为', newVal);
-    },
-    updateTime(newVal) {
-      console.log('身高预测组件：更新时间更新为', newVal);
-    }
+    currentHeight(newVal) {},
+    geneticHeight(newVal) {},
+    targetHeight(newVal) {},
+    probability(newVal) {},
+    baobaoname(newVal) {},
+    updateTime(newVal) {}
   },
-  created() {
-    console.log('身高预测组件创建，初始数据：', {
-      currentHeight: this.currentHeight,
-      geneticHeight: this.geneticHeight,
-      targetHeight: this.targetHeight,
-      probability: this.probability,
-      baobaoname: this.baobaoname,
-      updateTime: this.updateTime
-    });
-  },
+  created() {},
   methods: {
     openDetail() {
-      console.log('点击详细预测入口');
       if (typeof uni !== 'undefined') {
         uni.navigateTo({ url: '/pages/sgtool/sgycai/sgycai' });
-      } else {
-        console.error('uni is undefined. This function only works in the mini program environment.');
       }
     }
   }

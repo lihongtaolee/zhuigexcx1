@@ -50,7 +50,7 @@
 			image: module.left_module.image,
 			buttonText: module.left_module.button_text,
 			link: module.left_module.link,
-			value: module.left_module.value,  // 已在 fetchSgztmkModules 中处理
+			value: module.left_module.value,
 			bgColor: module.left_module.bg_color
 		  }"
 		  :rightTopModule="{
@@ -77,19 +77,19 @@
 		<text>哎呀，滑到底啦！宝宝要长高高~</text>
 	  </view>
 	</view>
-  </template>
+</template>
   
-  <script>
-  import Util from '@/utils/util';
-  import Api from '@/utils/api';
-  import Rest from '@/utils/rest';
-  
-  import ZhuigeSwiper from "@/components/zhuige-swiper";
-  import ZhuigeIcons from "@/components/zhuige-icons";
-  import zhuigeHeightPredict from '@/components/zhuige-height-predict.vue';
-  import ZhuigeSgztmkModule from "@/components/zhuige-sgztmk-module.vue";
-  
-  export default {
+<script>
+import Util from '@/utils/util';
+import Api from '@/utils/api';
+import Rest from '@/utils/rest';
+
+import ZhuigeSwiper from "@/components/zhuige-swiper";
+import ZhuigeIcons from "@/components/zhuige-icons";
+import zhuigeHeightPredict from '@/components/zhuige-height-predict.vue';
+import ZhuigeSgztmkModule from "@/components/zhuige-sgztmk-module.vue";
+
+export default {
 	components: {
 	  ZhuigeSwiper,
 	  ZhuigeIcons,
@@ -138,12 +138,10 @@
 			if (res.data.style) {
 			  this.style = res.data.style;
 			}
-			// 获取身高专题模块数据
 			this.fetchSgztmkModules();
 			this.isLoading = false;
 		  })
 		  .catch(err => {
-			console.log(err);
 			this.isLoading = false;
 		  });
 	  },
@@ -159,17 +157,14 @@
 	  },
 	  async fetchUserHeightData() {
 		const auth = uni.getStorageSync('zhuige_xcx_user');
-		console.log('开始获取身高数据，用户认证信息：', auth);
 		
 		if (!auth || !auth.user_id) {
-		  console.log('用户未登录，使用默认数据');
 		  this.heightData = this.getDefaultHeightData();
 		  this.isLoading = false;
 		  return;
 		}
 		
 		try {
-		  console.log('准备发起API请求，用户ID：', auth.user_id);
 		  const res = await uni.request({
 			url: `${this.apiBaseUrl}/get_user_height_data`,
 			method: 'GET',
@@ -177,13 +172,10 @@
 			header: { 'content-type': 'application/json' }
 		  });
   
-		  console.log('API响应数据：', res);
 		  if (res.statusCode === 200 && res.data && res.data.code === 0) {
 			const data = res.data.data;
-			console.log('解析到的用户身高数据：', data);
 			
 			if (data && data.baobaoname && data.current_height && data.target_height && data.prediction_probability) {
-			  console.log('检测到完整的宝宝档案，更新所有数据');
 			  this.heightData = {
 				geneticHeight: Number(data.gender === 1 ? data.boy_genetic_height : data.girl_genetic_height),
 				currentHeight: Number(data.current_height),
@@ -192,14 +184,11 @@
 				baobaoname: data.baobaoname,
 				updateTime: data.create_time
 			  };
-			  console.log('更新后的heightData：', this.heightData);
 			} else {
-			  console.log('未检测到完整的宝宝档案数据，使用默认数据');
 			  this.heightData = this.getDefaultHeightData();
 			}
 		  }
 		} catch (err) {
-		  console.error('API请求失败：', err);
 		  uni.showToast({ title: '获取数据失败', icon: 'none' });
 		  this.heightData = this.getDefaultHeightData();
 		} finally {
@@ -207,24 +196,19 @@
 		}
 	  },
 	  async fetchSgztmkModules() {
-		console.log('[身高专题模块] 开始获取模块数据');
 		this.isModulesLoading = true;
 		try {
-		  console.log('[身高专题模块] 请求基础数据API');
 		  const res = await Rest.post(Api.URL('sgtool', 'get_sgztmk_modules'));
 		  if (res.data && Array.isArray(res.data.modules)) {
-			console.log('[身高专题模块] 获取到基础数据：', res.data.modules);
 			const auth = uni.getStorageSync('zhuige_xcx_user');
-			console.log('[身高专题模块] 用户认证状态：', auth ? '已登录' : '未登录', auth);
 			
 			this.sgztmkModules = await Promise.all(res.data.modules.map(async module => {
 			  if (module.left_module.value_api) {
-				let value = '60'; // 默认值
+				let value = '60';
 				
 				if (auth && auth.user_id) {
 				  try {
 					const apiUrl = module.left_module.value_api.replace('{user_id}', auth.user_id);
-					console.log('身高专题模块：请求API', apiUrl);
 					
 					const response = await uni.request({
 					  url: apiUrl,
@@ -234,26 +218,18 @@
 					
 					if (response.data && response.data.code === 200 && response.data.data) {
 					  const result = response.data.data;
-					  console.log('[身高专题模块] API返回数据：', result);
 					  if (Array.isArray(result) && result.length > 0) {
 						const latestRecord = result[result.length - 1];
-						console.log('[身高专题模块] 最新记录：', latestRecord);
 						const queryString = apiUrl.split('?')[1];
 						const fieldsMatch = queryString.match(/fields=([^&]*)/);
 						const fields = fieldsMatch ? fieldsMatch[1] : null;
-						console.log('[身高专题模块] 提取字段名：', fields);
 						
 						if (fields && latestRecord[fields] !== undefined) {
 						  value = Number(latestRecord[fields]).toFixed(1);
-						  console.log('[身高专题模块] 更新数值：', { field: fields, value: value });
 						}
 					  }
 					}
-				  } catch (error) {
-					console.error('身高专题模块：获取模块数值失败:', error);
-				  }
-				} else {
-				  console.log('身高专题模块：用户未登录，使用默认值');
+				  } catch (error) {}
 				}
 				
 				module.left_module.value = value;
@@ -262,21 +238,19 @@
 			}));
 		  } else {
 			this.sgztmkModules = [];
-			console.log('身高专题模块：没有可用的模块数据');
 		  }
 		} catch (err) {
-		  console.error('身高专题模块：获取模块失败:', err);
 		  this.sgztmkModules = [];
 		} finally {
 		  this.isModulesLoading = false;
 		}
 	  }
 	}
-  }
-  </script>
+}
+</script>
   
-  <style lang="scss">
-  .zhuige-top-logo {
+<style lang="scss">
+.zhuige-top-logo {
 	display: flex;
 	align-items: center;
 	margin-right: 15rpx;
@@ -284,9 +258,9 @@
 	  height: 48rpx;
 	  width: 128rpx;
 	}
-  }
-  
-  .zhuige-top-search {
+}
+
+.zhuige-top-search {
 	display: flex;
 	align-items: center;
 	width: 80%;
@@ -296,34 +270,30 @@
 	font-size: 28rpx;
 	border: 1rpx solid #999999;
 	border-radius: 16rpx;
-  }
-  
-  .zhuige-wide-box {
+}
+
+.zhuige-wide-box {
 	padding: 0 20rpx;
 	margin-bottom: 20rpx;
-  }
-  
-  .height-predict-wrapper {
+}
+
+/* 合并了重复定义，移除了 !important */
+.height-predict-wrapper {
 	padding: 0;
-	margin: 20rpx;
-  }
-  
-  .height-predict-wrapper {
-	padding: 0 !important;
-	margin: 20rpx 0 !important;
-  }
-  
-  :deep(.height-predict-container) {
+	margin: 20rpx 0;
+}
+
+:deep(.height-predict-container) {
 	background: linear-gradient(135deg, #f5f5f5 0%, #e8f4ff 100%);
 	border-radius: 24rpx;
 	padding: 30rpx;
-	margin: 0 !important;
+	margin: 0;
 	box-shadow: 0 8rpx 24rpx rgba(8, 99, 204, 0.1);
 	position: relative;
 	z-index: 1;
-  }
-  
-  .bottom-tip {
+}
+
+.bottom-tip {
 	text-align: center;
 	padding: 40rpx 0;
 	margin-bottom: 40rpx;
@@ -332,6 +302,5 @@
 	  font-size: 28rpx;
 	  color: #999999;
 	}
-  }
-  </style>
-  
+}
+</style>

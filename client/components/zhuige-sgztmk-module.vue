@@ -140,20 +140,15 @@ export default {
   },
   methods: {
     handleClick(link) {
-      console.log('[身高专题模块] 点击模块，链接类型:', typeof link, '链接内容:', link);
       if (!link) return;
       
       if (typeof link === 'object' && link.type === 'miniprogram') {
-        console.log('[身高专题模块] 准备跳转小程序:', link.appId);
         uni.navigateToMiniProgram({
           appId: link.appId,
           path: link.path,
           timeout: 10000,
-          success: () => {
-            console.log('[身高专题模块] 跳转小程序成功:', link.appId);
-          },
+          success: () => {},
           fail: (err) => {
-            console.error('[身高专题模块] 跳转小程序失败:', err);
             uni.showToast({
               title: '跳转失败，请重试',
               icon: 'none',
@@ -173,14 +168,10 @@ export default {
           uni.navigateTo({
             url: cleanLink,
             timeout: 10000,
-            success: () => {
-              console.log('页面跳转成功');
-            },
+            success: () => {},
             fail: (err) => {
-              console.error('页面跳转失败:', err);
               if (retryCount < maxRetries) {
                 retryCount++;
-                console.log(`重试第${retryCount}次`);
                 setTimeout(tryNavigate, 1000);
               } else {
                 uni.showToast({
@@ -190,9 +181,7 @@ export default {
                 });
                 uni.reLaunch({
                   url: cleanLink,
-                  fail: (reLaunchErr) => {
-                    console.error('reLaunch也失败了:', reLaunchErr);
-                  }
+                  fail: () => {}
                 });
               }
             }
@@ -205,7 +194,6 @@ export default {
           url: `/pages/base/webview/webview?url=${encodeURIComponent(link)}`,
           timeout: 10000,
           fail: (err) => {
-            console.error('链接跳转失败:', err);
             uni.showToast({
               title: '链接跳转失败，请重试',
               icon: 'none',
@@ -217,18 +205,14 @@ export default {
     },
     handleImageLoad() {
       this.loadedImages++;
-      console.log('[身高专题模块] 图片加载进度:', this.loadedImages, '/', this.expectedImages);
       if (this.loadedImages >= this.expectedImages) {
         this.isLoaded = true;
-        console.log('[身高专题模块] 所有图片加载完成');
       }
     }
   },
   created() {
-    console.log('[身高专题模块] 组件创建');
     if (this.expectedImages === 0) {
       this.isLoaded = true;
-      console.log('[身高专题模块] 无图片模式，直接显示');
     }
   }
 };
