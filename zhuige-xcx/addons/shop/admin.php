@@ -58,13 +58,19 @@ class ZhuiGe_Shop_Admin {
             wp_die('您没有权限访问此页面');
         }
 
-        // 使用CodeStar Framework创建设置页面
+        // 检查 CodeStar Framework 是否加载
+        if (!class_exists('CSF')) {
+            echo '<div class="wrap"><h1>CodeStar Framework 未加载，请检查插件依赖。</h1></div>';
+            return;
+        }
+
+        // 使用 CodeStar Framework 创建设置页面
         CSF::createOptions('zhuige_shop', array(
-            'menu_title' => '追格商城Free',
-            'menu_slug'  => 'zhuige-shop',
-            'framework_title' => '追格商城Free <small>by <a href="https://www.zhuige.com" target="_blank" title="追格">www.zhuige.com</a></small>',
-            'menu_hidden' => true,
-            'show_bar_menu' => false,
+            'menu_title'       => '追格商城Free',
+            'menu_slug'        => 'zhuige-shop',
+            'framework_title'  => '追格商城Free <small>by <a href="https://www.zhuige.com" target="_blank" title="追格">www.zhuige.com</a></small>',
+            'menu_hidden'      => true,
+            'show_bar_menu'    => false,
         ));
 
         // 基础设置
@@ -134,6 +140,9 @@ class ZhuiGe_Shop_Admin {
                 ),
             )
         ));
+
+        // 临时调试输出，确保页面有内容
+        echo '<div class="wrap"><h1>追格商城Free 设置页面</h1></div>';
     }
 }
 

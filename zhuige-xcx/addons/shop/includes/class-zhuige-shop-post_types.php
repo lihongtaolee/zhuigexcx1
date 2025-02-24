@@ -43,9 +43,15 @@ class ZhuiGe_Shop_Post_Types
             'menu_name'         => '商品分类',
         );
         $goods_cat_args = array(
-            'labels' => $goods_cat_labels,
-            'hierarchical' => true,
+            'labels'        => $goods_cat_labels,
+            'hierarchical'  => true,
         );
         register_taxonomy('jq_goods_cat', 'jq_goods', $goods_cat_args);
     }
+}
+
+// 自动注册自定义文章类型和分类
+if ( function_exists( 'add_action' ) ) {
+    $zhui_ge_shop_post_types = new ZhuiGe_Shop_Post_Types();
+    add_action( 'init', array( $zhui_ge_shop_post_types, 'create_custom_post_type' ) );
 }
