@@ -103,6 +103,51 @@
 		]
 	},
 	"subPackages": [{
+			"root": "pages/shop",
+			"pages": [{
+				"path": "index/index",
+				"style": {
+					"navigationBarTitleText": "商城",
+					"enablePullDownRefresh": true
+				}
+			}, {
+				"path": "category/category",
+				"style": {
+					"navigationBarTitleText": "商品分类",
+					"enablePullDownRefresh": false
+				}
+			}, {
+				"path": "detail/detail",
+				"style": {
+					"navigationBarTitleText": "商品详情",
+					"enablePullDownRefresh": false
+				}
+			}, {
+				"path": "cart/cart",
+				"style": {
+					"navigationBarTitleText": "购物车",
+					"enablePullDownRefresh": false
+				}
+			}, {
+				"path": "order_confirm/order_confirm",
+				"style": {
+					"navigationBarTitleText": "确认订单",
+					"enablePullDownRefresh": false
+				}
+			}, {
+				"path": "order_manage/order_manage",
+				"style": {
+					"navigationBarTitleText": "订单管理",
+					"enablePullDownRefresh": true
+				}
+			}, {
+				"path": "order_detail/order_detail",
+				"style": {
+					"navigationBarTitleText": "订单详情",
+					"enablePullDownRefresh": false
+				}
+			}]
+		}, {
 			"root": "pages/base",
 			"pages": [{
 				"path": "about/about",

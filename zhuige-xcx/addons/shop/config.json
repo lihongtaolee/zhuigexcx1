@@ -1,0 +1,30 @@
+{
+    "name": "追格商城",
+    "slug": "shop",
+    "version": "1.0.0",
+    "description": "追格商城插件，提供商品展示、购物车、订单管理等功能",
+    "author": "追格",
+    "author_url": "https://www.zhuige.com",
+    "license": "GPL-2.0+",
+    "license_url": "http://www.gnu.org/licenses/gpl-2.0.txt",
+    "help": "https://www.zhuige.com/docs/shop.html",
+    "setting": "admin.php?page=zhuige-xcx#tab=shop",
+    "sql": [
+        "shop/sql.php"
+    ],
+    "func": [
+        "shop/function.php"
+    ],
+    "post_type": [
+        "shop/post-type.php"
+    ],
+    "admin": [
+        "shop/admin.php"
+    ],
+    "rest": [
+        "shop/post-controller.php",
+        "shop/goods-controller.php"
+    ],
+    "ajax": [],
+    "crud": []
+}

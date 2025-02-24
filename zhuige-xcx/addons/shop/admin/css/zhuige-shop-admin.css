@@ -1,0 +1,64 @@
+/* 追格商城后台管理样式 */
+.zhuige-shop-admin-header {
+    background: #fff;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.1);
+}
+
+.zhuige-shop-admin-content {
+    background: #fff;
+    padding: 20px;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.1);
+}
+
+.zhuige-shop-admin-title {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.zhuige-shop-admin-section {
+    margin-bottom: 30px;
+}
+
+.zhuige-shop-admin-section-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+/* 表单样式 */
+.zhuige-shop-admin-form-group {
+    margin-bottom: 20px;
+}
+
+.zhuige-shop-admin-form-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.zhuige-shop-admin-form-input {
+    width: 100%;
+    max-width: 400px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+/* 按钮样式 */
+.zhuige-shop-admin-button {
+    background: #0073aa;
+    color: #fff;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.zhuige-shop-admin-button:hover {
+    background: #006291;
+}

@@ -19,7 +19,8 @@ class ZhuiGe_Xcx
 	public static $rest_controllers = [];
 
 	public static $post_types = [
-		['id' => 'page', 'name' => '页面', 'link' => '/pages/base/page/page']
+		['id' => 'page', 'name' => '页面', 'link' => '/pages/base/page/page'],
+		['id' => 'jq_goods', 'name' => '商品', 'link' => '/pages/shop/detail/detail']
 	];
 
 	public static $require_login_uris = [];
@@ -189,6 +190,9 @@ class ZhuiGe_Xcx
 		require_once ZHUIGE_XCX_BASE_DIR . 'public/rest/class-zhuige-xcx-other-controller.php';
 		require_once ZHUIGE_XCX_BASE_DIR . 'public/rest/class-zhuige-xcx-post-controller.php';
 		require_once ZHUIGE_XCX_BASE_DIR . 'public/rest/class-zhuige-xcx-comment-controller.php';
+
+		// 加载商城模块基础控制器
+		require_once ZHUIGE_XCX_ADDONS_DIR . 'shop/shop-base-controller.php';
 
 		// 加载插件 REST API
 		foreach (ZhuiGe_Xcx_Addon::$rests as $rest) {
