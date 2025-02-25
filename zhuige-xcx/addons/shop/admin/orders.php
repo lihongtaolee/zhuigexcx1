@@ -5,12 +5,11 @@
  * Help document: https://www.zhuige.com/product/sc.html
  * github: https://github.com/zhuige-com/zhuige_shop
  * gitee: https://gitee.com/zhuige_com/zhuige_shop
- * License：GPL-2.0
- * Copyright © 2022-2023 www.zhuige.com All rights reserved.
+ * License: GPL-2.0
  */
 
-if (!defined('ABSPATH')) {
-	exit;
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
 }
 
 // 订单管理页面
@@ -19,13 +18,11 @@ function zhuige_shop_render_orders_page() {
     $table_name = $wpdb->prefix . 'zhuige_shop_order';
 
     // 获取订单列表
-    $orders = $wpdb->get_results("SELECT * FROM $table_name ORDER BY create_time DESC");
-
+    $orders = $wpdb->get_results( "SELECT * FROM $table_name ORDER BY create_time DESC" );
     ?>
     <div class="wrap">
         <h1 class="wp-heading-inline">订单管理</h1>
         <hr class="wp-header-end">
-
         <table class="wp-list-table widefat fixed striped">
             <thead>
                 <tr>
@@ -38,14 +35,14 @@ function zhuige_shop_render_orders_page() {
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($orders as $order) : ?>
+                <?php foreach ( $orders as $order ) : ?>
                     <tr>
-                        <td><?php echo esc_html($order->order_no); ?></td>
-                        <td><?php echo esc_html($order->user_id); ?></td>
-                        <td><?php echo esc_html($order->goods_id); ?></td>
-                        <td><?php echo esc_html($order->price); ?></td>
-                        <td><?php echo esc_html($order->status); ?></td>
-                        <td><?php echo esc_html($order->create_time); ?></td>
+                        <td><?php echo esc_html( $order->order_no ); ?></td>
+                        <td><?php echo esc_html( $order->user_id ); ?></td>
+                        <td><?php echo esc_html( $order->goods_id ); ?></td>
+                        <td><?php echo esc_html( $order->price ); ?></td>
+                        <td><?php echo esc_html( $order->status ); ?></td>
+                        <td><?php echo esc_html( $order->create_time ); ?></td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
@@ -54,4 +51,6 @@ function zhuige_shop_render_orders_page() {
     <?php
 }
 
+// 输出调试日志（可删除此行）
+error_log( "调用 zhuige_shop_render_orders_page()" );
 zhuige_shop_render_orders_page();
