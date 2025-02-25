@@ -15,5 +15,5 @@
  */
 export default {
 	//你的域名
-	JQ_DOMAIN: 'x.erquhealth.com',
+	JQ_DOMAIN: 'mall.zhuige.com',
 };

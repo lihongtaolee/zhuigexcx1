@@ -1,1 +1,0 @@
-<view class="data-v-99900412"><block wx:if="{{src}}"><web-view src="{{src}}" class="data-v-99900412"></web-view></block></view>

@@ -16,7 +16,7 @@ class ZhuiGe_Shop_Base_Controller extends WP_REST_Controller
 
 	public function __construct()
 	{
-		$this->namespace = 'zhuige';
+		$this->namespace = 'zhuige-shop';
 	}
 
 	public function register_routes()

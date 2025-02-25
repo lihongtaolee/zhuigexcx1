@@ -3,8 +3,7 @@
         "zhuige-bbs",
         "zhuige-topic_score",
         "zhuige-gray",
-        "zhuige-at_users",
-        "shop"
+        "zhuige-at_users"
     ],
     "sql": [
         "zhuige-bbs\/sql.php",
@@ -16,21 +15,17 @@
     ],
     "post_type": [
         "post-type.php",
-        "zhuige-bbs\/post-type.php",
-        "shop\/includes\/class-zhuige-shop-post_types.php"
+        "zhuige-bbs\/post-type.php"
     ],
     "admin": [
         "zhuige-bbs\/admin.php",
-        "zhuige-gray\/admin.php",
-        "shop\/admin.php"
+        "zhuige-gray\/admin.php"
     ],
     "rest": [
         "zhuige-bbs\/forum-controller.php",
         "zhuige-bbs\/topic-controller.php",
         "zhuige-topic_score\/topic-score-controller.php",
-        "zhuige-at_users\/at-users-controller.php",
-        "shop\/post-controller.php",
-        "shop\/goods-controller.php"
+        "zhuige-at_users\/at-users-controller.php"
     ],
     "ajax": [],
     "crud": [],

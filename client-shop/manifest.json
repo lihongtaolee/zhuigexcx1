@@ -1,6 +1,6 @@
 {
-    "name" : "client追格商城",
-    "appid" : "__UNI__FF1F273",
+    "name" : "client",
+    "appid" : "",
     "description" : "",
     "versionName" : "1.5.1",
     "versionCode" : "100",
@@ -42,7 +42,7 @@
     },
     "quickapp" : {},
     "mp-weixin" : {
-        "appid" : "wxc64c6856d656030d",
+        "appid" : "",
         "setting" : {
             "urlCheck" : false,
             "es6" : true,
