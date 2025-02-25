@@ -14,6 +14,28 @@ function URL(module, action) {
 	return `https://${YOUR_DOMIAN}/wp-json/zhuige/${module}/${action}`;
 }
 
+// 商城相关接口
+const ZHUIGE_SHOP_SETTING_HOME = URL('shop', 'setting/home');
+const ZHUIGE_SHOP_GOODS_LAST = URL('shop', 'goods/last');
+const ZHUIGE_SHOP_GOODS_DETAIL = URL('shop', 'goods/detail');
+const ZHUIGE_SHOP_GOODS_SEARCH = URL('shop', 'goods/search');
+const ZHUIGE_SHOP_CART_ADD = URL('shop', 'cart/add');
+const ZHUIGE_SHOP_CART_LIST = URL('shop', 'cart/list');
+const ZHUIGE_SHOP_CART_CLEAR = URL('shop', 'cart/clear');
+const ZHUIGE_SHOP_ORDER_CREATE = URL('shop', 'order/create');
+const ZHUIGE_SHOP_ORDER_LIST = URL('shop', 'order/list');
+const ZHUIGE_SHOP_ORDER_DETAIL = URL('shop', 'order/detail');
+
 export default {
-	URL
+	URL,
+	ZHUIGE_SHOP_SETTING_HOME,
+	ZHUIGE_SHOP_GOODS_LAST,
+	ZHUIGE_SHOP_GOODS_DETAIL,
+	ZHUIGE_SHOP_GOODS_SEARCH,
+	ZHUIGE_SHOP_CART_ADD,
+	ZHUIGE_SHOP_CART_LIST,
+	ZHUIGE_SHOP_CART_CLEAR,
+	ZHUIGE_SHOP_ORDER_CREATE,
+	ZHUIGE_SHOP_ORDER_LIST,
+	ZHUIGE_SHOP_ORDER_DETAIL
 };
