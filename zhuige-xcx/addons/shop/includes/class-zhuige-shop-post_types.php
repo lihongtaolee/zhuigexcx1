@@ -1,9 +1,7 @@
 <?php
 
-class ZhuiGe_Shop_Post_Types
-{
-    public function create_custom_post_type()
-    {
+class ZhuiGe_Shop_Post_Types {
+    public function create_custom_post_type() {
         $goods_labels = array(
             'name'               => '追格商品',
             'singular_name'      => '追格商品',
@@ -24,8 +22,9 @@ class ZhuiGe_Shop_Post_Types
             'description'   => '我们网站的追格商品信息',
             'public'        => true,
             'menu_position' => 5,
-            'supports'      => array('title', 'editor', 'thumbnail', 'excerpt', 'comments'),
-            'has_archive'   => true
+            'supports'      => array('title', 'editor', 'thumbnail', 'excerpt', 'comments', 'custom-fields'),
+            'has_archive'   => true,
+            'show_in_menu'  => false, // 关闭自动生成菜单
         );
         register_post_type('jq_goods', $goods_args);
 
@@ -43,8 +42,8 @@ class ZhuiGe_Shop_Post_Types
             'menu_name'         => '商品分类',
         );
         $goods_cat_args = array(
-            'labels'        => $goods_cat_labels,
-            'hierarchical'  => true,
+            'labels'       => $goods_cat_labels,
+            'hierarchical' => true,
         );
         register_taxonomy('jq_goods_cat', 'jq_goods', $goods_cat_args);
     }

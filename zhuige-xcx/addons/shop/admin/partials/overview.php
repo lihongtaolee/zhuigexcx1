@@ -4,8 +4,8 @@
  */
 
 CSF::createSection('zhuige-shop', array(
-    'title' => '概览',
-    'icon'  => 'fas fa-rocket',
+    'title'  => '概览',
+    'icon'   => 'fas fa-rocket',
     'fields' => array(
 
         array(
@@ -24,4 +24,4 @@ CSF::createSection('zhuige-shop', array(
         ),
 
     )
-)));
+));

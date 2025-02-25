@@ -55,4 +55,4 @@ CSF::createSection('zhuige-shop', array(
         ),
 
     )
-}));
+));
