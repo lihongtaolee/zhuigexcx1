@@ -18,9 +18,9 @@ function zhuige_shop_register() {
 	// 注册路由
 	add_action('rest_api_init', function () {
 		// 首页接口
-		register_rest_route('zhuige/v1', 'shop/home', [
+		register_rest_route('zhuige/v1', 'shop/setting/home', [
 			'methods' => 'GET',
-			'callback' => 'zhuige_shop_home',
+			'callback' => 'zhuige_shop_setting_home',
 			'permission_callback' => '__return_true'
 		]);
 
@@ -35,6 +35,58 @@ function zhuige_shop_register() {
 		register_rest_route('zhuige/v1', 'shop/goods/list', [
 			'methods' => 'GET',
 			'callback' => 'zhuige_shop_goods_list',
+			'permission_callback' => '__return_true'
+		]);
+
+		// 商品详情接口
+		register_rest_route('zhuige/v1', 'shop/goods/detail', [
+			'methods' => 'GET',
+			'callback' => 'zhuige_shop_goods_detail',
+			'permission_callback' => '__return_true'
+		]);
+
+		// 商品搜索接口
+		register_rest_route('zhuige/v1', 'shop/goods/search', [
+			'methods' => 'GET',
+			'callback' => 'zhuige_shop_goods_search',
+			'permission_callback' => '__return_true'
+		]);
+
+		// 购物车相关接口
+		register_rest_route('zhuige/v1', 'shop/cart/add', [
+			'methods' => 'POST',
+			'callback' => 'zhuige_shop_cart_add',
+			'permission_callback' => '__return_true'
+		]);
+
+		register_rest_route('zhuige/v1', 'shop/cart/list', [
+			'methods' => 'GET',
+			'callback' => 'zhuige_shop_cart_list',
+			'permission_callback' => '__return_true'
+		]);
+
+		register_rest_route('zhuige/v1', 'shop/cart/clear', [
+			'methods' => 'POST',
+			'callback' => 'zhuige_shop_cart_clear',
+			'permission_callback' => '__return_true'
+		]);
+
+		// 订单相关接口
+		register_rest_route('zhuige/v1', 'shop/order/create', [
+			'methods' => 'POST',
+			'callback' => 'zhuige_shop_order_create',
+			'permission_callback' => '__return_true'
+		]);
+
+		register_rest_route('zhuige/v1', 'shop/order/list', [
+			'methods' => 'GET',
+			'callback' => 'zhuige_shop_order_list',
+			'permission_callback' => '__return_true'
+		]);
+
+		register_rest_route('zhuige/v1', 'shop/order/detail', [
+			'methods' => 'GET',
+			'callback' => 'zhuige_shop_order_detail',
 			'permission_callback' => '__return_true'
 		]);
 	});
@@ -65,16 +117,62 @@ add_action('init', 'zhuige_shop_register');
 // 注册管理后台菜单
 function zhuige_shop_admin_menu() {
     add_menu_page(
-        '追格商城', 
-        '追格商城',
+        '追格商城Free', 
+        '追格商城Free',
         'manage_options',
         'zhuige-shop',
-        'zhuige_shop_admin_page',
+        'zhuige_shop_admin_home',
         'dashicons-cart',
         100
     );
+
+    add_submenu_page(
+        'zhuige-shop',
+        '首页设置',
+        '首页设置',
+        'manage_options',
+        'zhuige-shop',
+        'zhuige_shop_admin_home'
+    );
+
+    add_submenu_page(
+        'zhuige-shop',
+        '商品管理',
+        '商品管理',
+        'manage_options',
+        'edit.php?post_type=jq_goods',
+        ''
+    );
+
+    add_submenu_page(
+        'zhuige-shop',
+        '商品分类',
+        '商品分类',
+        'manage_options',
+        'edit-tags.php?taxonomy=jq_goods_cat&post_type=jq_goods',
+        ''
+    );
+
+    add_submenu_page(
+        'zhuige-shop',
+        '订单管理',
+        '订单管理',
+        'manage_options',
+        'zhuige-shop-orders',
+        'zhuige_shop_admin_orders'
+    );
 }
 add_action('admin_menu', 'zhuige_shop_admin_menu');
+
+// 首页设置页面回调
+function zhuige_shop_admin_home() {
+    require_once ZHUIGE_XCX_ADDONS_DIR . 'shop/admin/home.php';
+}
+
+// 订单管理页面回调
+function zhuige_shop_admin_orders() {
+    require_once ZHUIGE_XCX_ADDONS_DIR . 'shop/admin/orders.php';
+}
 
 // 激活时创建必要的数据表
 function zhuige_shop_activate() {

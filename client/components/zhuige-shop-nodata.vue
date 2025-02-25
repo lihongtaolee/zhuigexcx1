@@ -1,6 +1,6 @@
 <template>
 	<view class="none_tip">
-		<image class="image" src="/static/images/none_tip.png" mode="widthFix"></image>
+		<image class="image" src="/static/shop/images/none_tip.png" mode="widthFix"></image>
 		<view class="none_tip_text">
 			<text class="text">什么也没有~</text>
 		</view>
