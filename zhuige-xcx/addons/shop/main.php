@@ -2,7 +2,6 @@
 // 注意：本文件为追格商城功能模块，不包含插件头部信息，
 // 需由主插件在适当时机调用本模块的初始化函数。
 
-// 如果未定义 ZHUIGE_XCX_ADDONS_DIR，则定义（建议主插件已定义统一常量）  
 if ( ! defined( 'ZHUIGE_XCX_ADDONS_DIR' ) ) {
     define( 'ZHUIGE_XCX_ADDONS_DIR', plugin_dir_path( __FILE__ ) );
 }
@@ -75,21 +74,41 @@ function zhuige_shop_module_init() {
     add_action( 'init', function() {
         register_post_type( 'jq_goods', [
             'labels' => [
-                'name'          => '商品',
-                'singular_name' => '商品'
+                'name'                  => '商品',
+                'singular_name'         => '商品',
+                'menu_name'             => '商品管理',
+                'add_new'               => '发布商品',
+                'add_new_item'          => '发布商品',
+                'edit_item'             => '编辑商品',
+                'new_item'              => '新商品',
+                'view_item'             => '查看商品',
+                'search_items'          => '搜索商品',
+                'not_found'             => '没有找到商品',
+                'not_found_in_trash'    => '回收站中没有商品'
             ],
             'public'       => true,
             'has_archive'  => true,
-            'supports'     => [ 'title', 'editor', 'thumbnail' ]
+            'supports'     => [ 'title', 'editor', 'thumbnail' ],
+            'show_in_menu' => 'zhuige-shop'
         ] );
         // 注册商品分类
         register_taxonomy( 'jq_goods_cat', 'jq_goods', [
             'labels' => [
-                'name'          => '商品分类',
-                'singular_name' => '商品分类'
+                'name'                  => '商品分类',
+                'singular_name'         => '商品分类',
+                'search_items'          => '搜索商品分类',
+                'all_items'             => '所有商品分类',
+                'parent_item'           => '上级商品分类',
+                'parent_item_colon'     => '上级商品分类：',
+                'edit_item'             => '编辑商品分类',
+                'update_item'           => '更新商品分类',
+                'add_new_item'          => '新增商品分类',
+                'new_item_name'         => '新商品分类名称',
+                'menu_name'             => '商品分类',
             ],
             'public'       => true,
-            'hierarchical' => true
+            'hierarchical' => true,
+            'show_in_menu' => true,
         ] );
     } );
 
@@ -102,8 +121,8 @@ function zhuige_shop_module_init() {
  */
 function zhuige_shop_admin_menu() {
     add_menu_page(
-        '追格商城Free',
-        '追格商城Free',
+        '追格商城',
+        '追格商城',
         'manage_options',
         'zhuige-shop',
         'zhuige_shop_admin_home',
@@ -118,14 +137,8 @@ function zhuige_shop_admin_menu() {
         'zhuige-shop',
         'zhuige_shop_admin_home'
     );
-    add_submenu_page(
-        'zhuige-shop',
-        '商品管理',
-        '商品管理',
-        'manage_options',
-        'edit.php?post_type=jq_goods',
-        ''
-    );
+    // 自定义文章类型“jq_goods”将自动添加“商品管理”及“发布商品”子菜单（通过 show_in_menu 参数控制），
+    // 这里手动添加“商品分类”和“订单管理”子菜单
     add_submenu_page(
         'zhuige-shop',
         '商品分类',
@@ -148,14 +161,14 @@ function zhuige_shop_admin_menu() {
  * 首页设置页面回调
  */
 function zhuige_shop_admin_home() {
-    require_once ZHUIGE_XCX_ADDONS_DIR . 'admin/home.php';
+    require_once ZHUIGE_XCX_ADDONS_DIR . 'shop/admin/home.php';
 }
 
 /**
  * 订单管理页面回调
  */
 function zhuige_shop_admin_orders() {
-    require_once ZHUIGE_XCX_ADDONS_DIR . 'admin/orders.php';
+    require_once ZHUIGE_XCX_ADDONS_DIR . 'shop/admin/orders.php';
 }
 
 /**
