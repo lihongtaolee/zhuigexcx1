@@ -1,26 +1,17 @@
 <?php
-/*
-Plugin Name: 追格商城小程序
-Plugin URI: https://www.zhuige.com/product/sc.html
-Description: 追格商城小程序插件，提供商城功能的 API 和后台管理。
-Version: 1.0
-Author: 追格
-License: GPL-2.0
-*/
+// 注意：本文件为追格商城功能模块，不包含插件头部信息，
+// 需由主插件在适当时机调用本模块的初始化函数。
 
-// 防止直接访问
-if ( ! defined( 'ABSPATH' ) ) {
-    exit;
+// 如果未定义 ZHUIGE_XCX_ADDONS_DIR，则定义（建议主插件已定义统一常量）  
+if ( ! defined( 'ZHUIGE_XCX_ADDONS_DIR' ) ) {
+    define( 'ZHUIGE_XCX_ADDONS_DIR', plugin_dir_path( __FILE__ ) );
 }
 
-// 引入配置文件，确保常量已定义
-require_once dirname( __FILE__ ) . '/config.php';
+/**
+ * 初始化追格商城模块
+ */
+function zhuige_shop_module_init() {
 
-// 输出调试日志，确认插件已加载（可删除此行）
-error_log( "追格商城小程序插件加载 - main.php loaded." );
-
-// 注册商城模块
-function zhuige_shop_register() {
     // 注册 REST API 路由
     add_action( 'rest_api_init', function () {
         register_rest_route( 'zhuige/v1', 'shop/setting/home', [
@@ -81,32 +72,35 @@ function zhuige_shop_register() {
     } );
 
     // 注册自定义文章类型（商品）
-    register_post_type( 'jq_goods', [
-        'labels' => [
-            'name'          => '商品',
-            'singular_name' => '商品'
-        ],
-        'public'       => true,
-        'has_archive'  => true,
-        'supports'     => [ 'title', 'editor', 'thumbnail' ]
-    ] );
+    add_action( 'init', function() {
+        register_post_type( 'jq_goods', [
+            'labels' => [
+                'name'          => '商品',
+                'singular_name' => '商品'
+            ],
+            'public'       => true,
+            'has_archive'  => true,
+            'supports'     => [ 'title', 'editor', 'thumbnail' ]
+        ] );
+        // 注册商品分类
+        register_taxonomy( 'jq_goods_cat', 'jq_goods', [
+            'labels' => [
+                'name'          => '商品分类',
+                'singular_name' => '商品分类'
+            ],
+            'public'       => true,
+            'hierarchical' => true
+        ] );
+    } );
 
-    // 注册商品分类
-    register_taxonomy( 'jq_goods_cat', 'jq_goods', [
-        'labels' => [
-            'name'          => '商品分类',
-            'singular_name' => '商品分类'
-        ],
-        'public'       => true,
-        'hierarchical' => true
-    ] );
+    // 注册管理后台菜单
+    add_action( 'admin_menu', 'zhuige_shop_admin_menu' );
 }
-add_action( 'init', 'zhuige_shop_register' );
 
-// 注册管理后台菜单
+/**
+ * 管理菜单注册函数
+ */
 function zhuige_shop_admin_menu() {
-    error_log( "执行 zhuige_shop_admin_menu()" );
-
     add_menu_page(
         '追格商城Free',
         '追格商城Free',
@@ -149,28 +143,32 @@ function zhuige_shop_admin_menu() {
         'zhuige_shop_admin_orders'
     );
 }
-add_action( 'admin_menu', 'zhuige_shop_admin_menu' );
 
-// 首页设置页面回调
+/**
+ * 首页设置页面回调
+ */
 function zhuige_shop_admin_home() {
-    error_log( "调用 zhuige_shop_admin_home()" );
     require_once ZHUIGE_XCX_ADDONS_DIR . 'admin/home.php';
 }
 
-// 订单管理页面回调
+/**
+ * 订单管理页面回调
+ */
 function zhuige_shop_admin_orders() {
-    error_log( "调用 zhuige_shop_admin_orders()" );
     require_once ZHUIGE_XCX_ADDONS_DIR . 'admin/orders.php';
 }
 
-// 激活时创建必要的数据表
-function zhuige_shop_activate() {
+/**
+ * 数据表创建函数
+ * （建议由主插件在激活时统一调用本模块的创建表函数）
+ */
+function zhuige_shop_create_tables() {
     global $wpdb;
     $charset_collate = $wpdb->get_charset_collate();
 
     // 订单表
-    $table_name = $wpdb->prefix . 'zhuige_shop_order';
-    $sql = "CREATE TABLE IF NOT EXISTS $table_name (
+    $table_order = $wpdb->prefix . 'zhuige_shop_order';
+    $sql = "CREATE TABLE IF NOT EXISTS $table_order (
         id bigint(20) NOT NULL AUTO_INCREMENT,
         order_no varchar(32) NOT NULL,
         user_id bigint(20) NOT NULL,
@@ -206,4 +204,6 @@ function zhuige_shop_activate() {
     require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
     dbDelta( $sql );
 }
-register_activation_hook( __FILE__, 'zhuige_shop_activate' );
+
+// 调用模块初始化（如果主插件已有统一加载机制，可注释此行）
+zhuige_shop_module_init();
