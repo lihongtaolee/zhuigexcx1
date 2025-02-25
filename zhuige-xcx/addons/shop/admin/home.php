@@ -1,172 +1,51 @@
 <?php
-/*
- * 追格商城小程序
- * Author: 追格
- * Help document: https://www.zhuige.com/product/sc.html
- * github: https://github.com/zhuige-com/zhuige_shop
- * gitee: https://gitee.com/zhuige_com/zhuige_shop
- * License: GPL-2.0
+/**
+ * 追格商城 - 首页设置管理页面
  */
-
-if ( ! defined( 'ABSPATH' ) ) {
-    exit;
+if (!current_user_can('manage_options')) {
+    wp_die(__('你没有权限访问此页面。'));
 }
 
-// 如果 Codestar Framework (CSF) 未加载，则提示错误信息
-if ( ! class_exists( 'CSF' ) ) {
-    echo '<div class="notice notice-error"><p>Codestar Framework (CSF) 未加载，请先安装或激活该插件。</p></div>';
-    return;
+// 实例化设置控制器
+$setting_controller = new Zhuige_Shop_Setting_Controller();
+
+// 处理表单提交
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && check_admin_referer('zhuige_shop_home_settings')) {
+    $slider = isset($_POST['zhuige_shop_slider']) ? sanitize_text_field($_POST['zhuige_shop_slider']) : '';
+    $banner = isset($_POST['zhuige_shop_banner']) ? sanitize_text_field($_POST['zhuige_shop_banner']) : '';
+    $res1 = $setting_controller->update_setting('zhuige_shop_slider', $slider);
+    $res2 = $setting_controller->update_setting('zhuige_shop_banner', $banner);
+    if ($res1 && $res2) {
+        echo '<div class="updated"><p>设置保存成功。</p></div>';
+    } else {
+        echo '<div class="error"><p>保存设置失败，请重试。</p></div>';
+    }
 }
 
-CSF::createSection( 'zhuige-shop', array(
-    'title'  => '首页设置',
-    'icon'   => 'fas fa-home',
-    'fields' => array(
-        array(
-            'id'      => 'background',
-            'type'    => 'media',
-            'title'   => '背景图片',
-            'library' => 'image',
-            'desc'    => '建议尺寸750x350'
-        ),
-        array(
-            'id'     => 'slides',
-            'type'   => 'group',
-            'title'  => '幻灯片',
-            'fields' => array(
-                array(
-                    'id'      => 'image',
-                    'type'    => 'media',
-                    'title'   => '图片',
-                    'library' => 'image',
-                    'desc'    => '建议尺寸750x350'
-                ),
-                array(
-                    'id'    => 'title',
-                    'type'  => 'text',
-                    'title' => '标题'
-                ),
-                array(
-                    'id'    => 'link',
-                    'type'  => 'text',
-                    'title' => '链接'
-                ),
-            )
-        ),
-        array(
-            'id'     => 'icon_navs',
-            'type'   => 'group',
-            'title'  => '导航菜单',
-            'fields' => array(
-                array(
-                    'id'      => 'image',
-                    'type'    => 'media',
-                    'title'   => '图标',
-                    'library' => 'image',
-                    'desc'    => '建议尺寸100x100'
-                ),
-                array(
-                    'id'    => 'title',
-                    'type'  => 'text',
-                    'title' => '标题'
-                ),
-                array(
-                    'id'    => 'link',
-                    'type'  => 'text',
-                    'title' => '链接'
-                ),
-            )
-        ),
-        array(
-            'id'     => 'home_rec',
-            'type'   => 'fieldset',
-            'title'  => '推荐商品',
-            'fields' => array(
-                array(
-                    'id'          => 'title',
-                    'type'        => 'text',
-                    'title'       => '标题',
-                    'placeholder' => '标题'
-                ),
-                array(
-                    'id'         => 'goods_ids',
-                    'type'       => 'select',
-                    'title'      => '选择商品',
-                    'chosen'     => true,
-                    'multiple'   => true,
-                    'sortable'   => true,
-                    'ajax'       => true,
-                    'options'    => 'posts',
-                    'query_args' => array(
-                        'post_type' => 'jq_goods',
-                    ),
-                    'placeholder' => '请选择商品'
-                ),
-                array(
-                    'id'       => 'switch',
-                    'type'     => 'switcher',
-                    'title'    => '开启/停用',
-                    'subtitle' => '是否显示活动区域',
-                    'default'  => '1'
-                ),
-            )
-        ),
-        array(
-            'id'         => 'goods_cat',
-            'type'       => 'select',
-            'title'      => '导航设置',
-            'placeholder'=> '选择分类',
-            'chosen'     => true,
-            'multiple'   => true,
-            'sortable'   => true,
-            'options'    => 'categories',
-            'query_args' => array(
-                'taxonomy' => 'jq_goods_cat'
-            ),
-        ),
-        array(
-            'id'     => 'home_ad_pop',
-            'type'   => 'fieldset',
-            'title'  => '弹窗广告',
-            'fields' => array(
-                array(
-                    'id'      => 'image',
-                    'type'    => 'media',
-                    'title'   => '图片',
-                    'library' => 'image',
-                ),
-                array(
-                    'id'      => 'link',
-                    'type'    => 'text',
-                    'title'   => '链接',
-                    'default' => 'https://www.zhuige.com',
-                ),
-                array(
-                    'id'      => 'switch',
-                    'type'    => 'switcher',
-                    'title'   => '开启/停用',
-                    'default' => '1'
-                ),
-                array(
-                    'id'       => 'interval',
-                    'type'     => 'number',
-                    'title'    => '间隔时间',
-                    'subtitle' => '单位（小时）',
-                ),
-            )
-        ),
-        array(
-            'id'    => 'share_title',
-            'type'  => 'text',
-            'title' => '分享标题',
-            'desc'  => '分享给好友时显示的标题'
-        ),
-        array(
-            'id'      => 'share_thumb',
-            'type'    => 'media',
-            'title'   => '分享图片',
-            'library' => 'image',
-            'desc'    => '分享给好友时显示的图片'
-        ),
-    )
-) );
+// 获取当前设置
+$current_slider = $setting_controller->get_setting('zhuige_shop_slider');
+$current_banner = $setting_controller->get_setting('zhuige_shop_banner');
+?>
+<div class="wrap">
+    <h1>首页设置</h1>
+    <form method="post" action="">
+        <?php wp_nonce_field('zhuige_shop_home_settings'); ?>
+        <table class="form-table">
+            <tr>
+                <th scope="row"><label for="zhuige_shop_slider">幻灯片图片</label></th>
+                <td>
+                    <input type="text" id="zhuige_shop_slider" name="zhuige_shop_slider" value="<?php echo esc_attr($current_slider); ?>" class="regular-text" />
+                    <p class="description">请输入幻灯片图片 URL，多张用逗号分隔。</p>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row"><label for="zhuige_shop_banner">首页横幅</label></th>
+                <td>
+                    <input type="text" id="zhuige_shop_banner" name="zhuige_shop_banner" value="<?php echo esc_attr($current_banner); ?>" class="regular-text" />
+                    <p class="description">请输入首页横幅图片 URL。</p>
+                </td>
+            </tr>
+        </table>
+        <?php submit_button('保存设置'); ?>
+    </form>
+</div>

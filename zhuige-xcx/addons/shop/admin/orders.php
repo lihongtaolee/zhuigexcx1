@@ -1,56 +1,66 @@
 <?php
-/*
- * 追格商城小程序
- * Author: 追格
- * Help document: https://www.zhuige.com/product/sc.html
- * github: https://github.com/zhuige-com/zhuige_shop
- * gitee: https://gitee.com/zhuige_com/zhuige_shop
- * License: GPL-2.0
+/**
+ * 追格商城 - 订单管理页面
  */
-
-if ( ! defined( 'ABSPATH' ) ) {
-    exit;
+if (!current_user_can('manage_options')) {
+    wp_die(__('你没有权限访问此页面。'));
 }
 
-// 订单管理页面
-function zhuige_shop_render_orders_page() {
-    global $wpdb;
-    $table_name = $wpdb->prefix . 'zhuige_shop_order';
+$order_controller = new Zhuige_Shop_Order_Controller();
+$orders = $order_controller->get_order_list();
 
-    // 获取订单列表
-    $orders = $wpdb->get_results( "SELECT * FROM $table_name ORDER BY create_time DESC" );
-    ?>
-    <div class="wrap">
-        <h1 class="wp-heading-inline">订单管理</h1>
-        <hr class="wp-header-end">
-        <table class="wp-list-table widefat fixed striped">
-            <thead>
-                <tr>
-                    <th>订单号</th>
-                    <th>用户ID</th>
-                    <th>商品ID</th>
-                    <th>价格</th>
-                    <th>状态</th>
-                    <th>创建时间</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ( $orders as $order ) : ?>
+// 处理订单状态更新操作（通过 GET 参数触发）
+if (isset($_GET['action']) && $_GET['action'] === 'update_status' && isset($_GET['order_id']) && isset($_GET['status'])) {
+    $order_id = intval($_GET['order_id']);
+    $new_status = sanitize_text_field($_GET['status']);
+    $update_result = $order_controller->update_order_status($order_id, $new_status);
+    if ($update_result) {
+        echo '<div class="updated"><p>订单状态已更新。</p></div>';
+    } else {
+        echo '<div class="error"><p>更新订单状态失败。</p></div>';
+    }
+    // 刷新页面防止重复提交
+    echo '<meta http-equiv="refresh" content="2;url=' . esc_url(admin_url('admin.php?page=zhuige-shop-orders')) . '">';
+}
+?>
+<div class="wrap">
+    <h1>订单管理</h1>
+    <table class="wp-list-table widefat fixed striped">
+        <thead>
+            <tr>
+                <th>订单号</th>
+                <th>用户ID</th>
+                <th>总额</th>
+                <th>状态</th>
+                <th>支付方式</th>
+                <th>创建时间</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php if (!empty($orders)) : ?>
+                <?php foreach ($orders as $order) : ?>
                     <tr>
-                        <td><?php echo esc_html( $order->order_no ); ?></td>
-                        <td><?php echo esc_html( $order->user_id ); ?></td>
-                        <td><?php echo esc_html( $order->goods_id ); ?></td>
-                        <td><?php echo esc_html( $order->price ); ?></td>
-                        <td><?php echo esc_html( $order->status ); ?></td>
-                        <td><?php echo esc_html( $order->create_time ); ?></td>
+                        <td><?php echo esc_html($order['order_number']); ?></td>
+                        <td><?php echo esc_html($order['user_id']); ?></td>
+                        <td><?php echo esc_html($order['total']); ?></td>
+                        <td><?php echo esc_html($order['order_status']); ?></td>
+                        <td><?php echo esc_html($order['payment_method']); ?></td>
+                        <td><?php echo esc_html($order['create_time']); ?></td>
+                        <td>
+                            <?php if ($order['order_status'] !== 'completed') : ?>
+                                <a href="<?php echo admin_url('admin.php?page=zhuige-shop-orders&action=update_status&order_id=' . $order['id'] . '&status=completed'); ?>">标记完成</a>
+                            <?php else: ?>
+                                <span>已完成</span>
+                            <?php endif; ?>
+                        </td>
                     </tr>
                 <?php endforeach; ?>
-            </tbody>
-        </table>
-    </div>
-    <?php
-}
-
-// 输出调试日志（可删除此行）
-error_log( "调用 zhuige_shop_render_orders_page()" );
-zhuige_shop_render_orders_page();
+            <?php else: ?>
+                <tr>
+                    <td colspan="7">暂无订单记录</td>
+                </tr>
+            <?php endif; ?>
+        </tbody>
+    </table>
+</div>
