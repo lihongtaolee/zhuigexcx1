@@ -128,3 +128,12 @@ function run_zhuige_xcx()
     $plugin->run();
 }
 run_zhuige_xcx();
+
+// 手动加载商城模块插件的逻辑
+$shop_plugin = ZHUIGE_XCX_ADDONS_DIR . 'shop/plugin.php';
+if (file_exists($shop_plugin)) {
+    require_once($shop_plugin);
+    error_log("【商城模块】shop/plugin.php 已成功加载");
+} else {
+    error_log("【商城模块】shop/plugin.php 文件未找到");
+}
