@@ -122,15 +122,6 @@ foreach (ZhuiGe_Xcx_Addon::$users as $user) {
     }
 }
 
-// *** 新增：加载追格商城模块（shop 模块） ***
-require_once ZHUIGE_XCX_ADDONS_DIR . 'shop/main.php';
-if (function_exists('zhuige_shop_module_init')) {
-    zhuige_shop_module_init();
-    error_log("追格商城模块已初始化。");
-} else {
-    error_log("追格商城模块加载失败：函数 zhuige_shop_module_init 不存在。");
-}
-
 function run_zhuige_xcx()
 {
     $plugin = new ZhuiGe_Xcx();
