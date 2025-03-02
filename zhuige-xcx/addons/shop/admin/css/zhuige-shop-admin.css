@@ -1,0 +1,148 @@
+/**
+ * 追格商城小程序
+ * Author: 追格
+ * Help document: https://www.zhuige.com/product/sc.html
+ * github: https://github.com/zhuige-com/zhuige_shop
+ * gitee: https://gitee.com/zhuige_com/zhuige_shop
+ * License：GPL-2.0
+ * Copyright © 2022-2023 www.zhuige.com All rights reserved.
+ */
+
+/* 商城后台管理样式 */
+.zhuige-shop-admin {
+    padding: 20px;
+}
+
+.zhuige-shop-admin .form-table th {
+    width: 200px;
+}
+
+.zhuige-shop-admin .form-table td {
+    vertical-align: middle;
+}
+
+.zhuige-shop-admin .form-table input[type="text"],
+.zhuige-shop-admin .form-table input[type="number"],
+.zhuige-shop-admin .form-table textarea {
+    width: 400px;
+}
+
+.zhuige-shop-admin .form-table textarea {
+    height: 100px;
+}
+
+/* 订单管理样式 */
+.zhuige-shop-order-table img {
+    max-width: 48px;
+    max-height: 48px;
+}
+
+.zhuige-shop-order-table .order-status-pending {
+    color: #f56c6c;
+}
+
+.zhuige-shop-order-table .order-status-processing {
+    color: #e6a23c;
+}
+
+.zhuige-shop-order-table .order-status-completed {
+    color: #67c23a;
+}
+
+.zhuige-shop-order-table .order-status-cancelled {
+    color: #909399;
+}
+
+/* 商品管理样式 */
+.zhuige-shop-goods-form .goods-image {
+    width: 100px;
+    height: 100px;
+    margin-right: 10px;
+    position: relative;
+}
+
+.zhuige-shop-goods-form .goods-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.zhuige-shop-goods-form .goods-image .remove-image {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    line-height: 20px;
+    cursor: pointer;
+}
+
+.zhuige-shop-goods-form .goods-specs {
+    margin-top: 10px;
+}
+
+.zhuige-shop-goods-form .goods-spec-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.zhuige-shop-goods-form .goods-spec-item input {
+    margin-right: 10px;
+}
+
+.zhuige-shop-goods-form .goods-spec-item .remove-spec {
+    color: #f56c6c;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.zhuige-shop-goods-form .add-spec-btn {
+    margin-top: 10px;
+}
+
+/* 评论管理样式 */
+.zhuige-shop-comment-table .comment-content {
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.zhuige-shop-comment-table .comment-rating {
+    color: #ff9900;
+}
+
+.zhuige-shop-comment-table .comment-status-pending {
+    color: #e6a23c;
+}
+
+.zhuige-shop-comment-table .comment-status-approved {
+    color: #67c23a;
+}
+
+.zhuige-shop-comment-table .comment-status-spam {
+    color: #f56c6c;
+}
+
+/* 响应式调整 */
+@media screen and (max-width: 782px) {
+    .zhuige-shop-admin .form-table input[type="text"],
+    .zhuige-shop-admin .form-table input[type="number"],
+    .zhuige-shop-admin .form-table textarea {
+        width: 100%;
+    }
+    
+    .zhuige-shop-admin .form-table th {
+        width: 100%;
+        display: block;
+    }
+    
+    .zhuige-shop-admin .form-table td {
+        display: block;
+        padding: 0 0 10px;
+    }
+}
