@@ -14,23 +14,15 @@ class Shop_Setting_Controller extends ZhuiGe_Xcx_Base_Controller
 	public function __construct()
 	{
 		parent::__construct();
-		$this->module = 'shop';
+		$this->module = 'shop/setting';
 		$this->routes = [
-			'home' => 'get_home',
-			'mine' => 'get_mine',
-			'login' => 'get_login',
-			'logout' => 'get_logout',
-			'search' => 'get_search',
-			'index' => 'get_home',
+			'' => ['callback' => 'get_home', 'method' => 'GET'],
+			'mine' => ['callback' => 'get_mine', 'method' => 'GET'],
+			'login' => ['callback' => 'get_login', 'method' => 'GET'],
+			'logout' => ['callback' => 'get_logout', 'method' => 'GET'],
+			'search' => ['callback' => 'get_search', 'method' => 'GET'],
+			'index' => ['callback' => 'get_home', 'method' => 'GET']
 		];
-		
-		// 添加兼容追格小程序的路由
-		add_action('rest_api_init', function () {
-			register_rest_route('zhuige', 'shop/setting', [
-				'methods' => 'GET',
-				'callback' => [$this, 'get_home'],
-			]);
-		});}
 	}
 
 	/**

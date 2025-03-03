@@ -14,7 +14,7 @@ class Shop_Order_Controller extends ZhuiGe_Xcx_Base_Controller
 	public function __construct()
 	{
 		parent::__construct();
-		$this->module = 'shop';
+		$this->module = 'zhuige/shop/order';
 		$this->routes = [
 			'create' => 'create_order',
 			'list' => 'get_order_list',
@@ -188,106 +188,6 @@ class Shop_Order_Controller extends ZhuiGe_Xcx_Base_Controller
 			return $this->make_error('订单不存在');
 		}
 
-		if ($order->status != 'wait_pay') {
-			return $this->make_error('只能支付待支付的订单');
-		}
-
-		// 模拟支付成功
-		$wpdb->update(
-			$table_order,
-			[
-				'status' => 'wait_confirm',
-				'paytime' => time()
-			],
-			['id' => $order_id]
-		);
-
-		return $this->make_success('支付成功');
-	}
-
-	/**
-	 * 确认收货
-	 */
-	public function confirm_order($request)
-	{
-		$user_id = $this->check_login($request);
-		if (!$user_id) {
-			return $this->make_error('请先登录');
-		}
-
-		$order_id = (int)($this->param_value($request, 'order_id'));
-		if (!$order_id) {
-			return $this->make_error('缺少参数');
-		}
-
-		global $wpdb;
-		$table_order = $wpdb->prefix . 'zhuige_shop_order';
-
-		$order = $wpdb->get_row($wpdb->prepare(
-			"SELECT * FROM $table_order WHERE id = %d AND user_id = %d",
-			$order_id, $user_id
-		));
-
-		if (!$order) {
-			return $this->make_error('订单不存在');
-		}
-
-		if ($order->status != 'wait_confirm') {
-			return $this->make_error('只能确认待收货的订单');
-		}
-
-		$wpdb->update(
-			$table_order,
-			[
-				'status' => 'completed',
-				'confirmtime' => time()
-			],
-			['id' => $order_id]
-		);
-
-		return $this->make_success('确认收货成功');
-	}
-
-	/**
-	 * 删除订单
-	 */
-	public function delete_order($request)
-	{
-		$user_id = $this->check_login($request);
-		if (!$user_id) {
-			return $this->make_error('请先登录');
-		}
-
-		$order_id = (int)($this->param_value($request, 'order_id'));
-		if (!$order_id) {
-			return $this->make_error('缺少参数');
-		}
-
-		global $wpdb;
-		$table_order = $wpdb->prefix . 'zhuige_shop_order';
-
-		$order = $wpdb->get_row($wpdb->prepare(
-			"SELECT * FROM $table_order WHERE id = %d AND user_id = %d",
-			$order_id, $user_id
-		));
-
-		if (!$order) {
-			return $this->make_error('订单不存在');
-		}
-
-		if ($order->status != 'completed' && $order->status != 'canceled') {
-			return $this->make_error('只能删除已完成或已取消的订单');
-		}
-
-		$wpdb->delete(
-			$table_order,
-			['id' => $order_id]
-		);
-
-		return $this->make_success('删除订单成功');
-	}
-		}
-
 		$data = [
 			'id' => $order->id,
 			'order_no' => $order->order_no,
@@ -337,116 +237,19 @@ class Shop_Order_Controller extends ZhuiGe_Xcx_Base_Controller
 		}
 
 		if ($order->status != 'wait_pay') {
-			return $this->make_error('只能支付待支付的订单');
-		}
-
-		// 模拟支付成功
-		$wpdb->update(
-			$table_order,
-			[
-				'status' => 'wait_confirm',
-				'paytime' => time()
-			],
-			['id' => $order_id]
-		);
-
-		return $this->make_success('支付成功');
-	}
-
-	/**
-	 * 确认收货
-	 */
-	public function confirm_order($request)
-	{
-		$user_id = $this->check_login($request);
-		if (!$user_id) {
-			return $this->make_error('请先登录');
-		}
-
-		$order_id = (int)($this->param_value($request, 'order_id'));
-		if (!$order_id) {
-			return $this->make_error('缺少参数');
-		}
-
-		global $wpdb;
-		$table_order = $wpdb->prefix . 'zhuige_shop_order';
-
-		$order = $wpdb->get_row($wpdb->prepare(
-			"SELECT * FROM $table_order WHERE id = %d AND user_id = %d",
-			$order_id, $user_id
-		));
-
-		if (!$order) {
-			return $this->make_error('订单不存在');
-		}
-
-		if ($order->status != 'wait_confirm') {
-			return $this->make_error('只能确认待收货的订单');
-		}
-
-		$wpdb->update(
-			$table_order,
-			[
-				'status' => 'completed',
-				'confirmtime' => time()
-			],
-			['id' => $order_id]
-		);
-
-		return $this->make_success('确认收货成功');
-	}
-
-	/**
-	 * 删除订单
-	 */
-	public function delete_order($request)
-	{
-		$user_id = $this->check_login($request);
-		if (!$user_id) {
-			return $this->make_error('请先登录');
-		}
-
-		$order_id = (int)($this->param_value($request, 'order_id'));
-		if (!$order_id) {
-			return $this->make_error('缺少参数');
-		}
-
-		global $wpdb;
-		$table_order = $wpdb->prefix . 'zhuige_shop_order';
-
-		$order = $wpdb->get_row($wpdb->prepare(
-			"SELECT * FROM $table_order WHERE id = %d AND user_id = %d",
-			$order_id, $user_id
-		));
-
-		if (!$order) {
-			return $this->make_error('订单不存在');
-		}
-
-		if ($order->status != 'completed' && $order->status != 'canceled') {
-			return $this->make_error('只能删除已完成或已取消的订单');
-		}
-
-		$wpdb->delete(
-			$table_order,
-			['id' => $order_id]
-		);
-
-		return $this->make_success('删除订单成功');
-	}
-		}
-
-		if ($order->status != 'wait_pay') {
 			return $this->make_error('只能取消待支付的订单');
 		}
 
 		$wpdb->update(
 			$table_order,
-			['status' => 'canceled'],
+			[
+				'status' => 'canceled',
+				'canceltime' => time()
+			],
 			['id' => $order_id]
 		);
 
-		return $this->make_success('订单已取消');
+		return $this->make_success('取消订单成功');
 	}
 
 	/**
@@ -574,3 +377,4 @@ class Shop_Order_Controller extends ZhuiGe_Xcx_Base_Controller
 
 		return $this->make_success('删除订单成功');
 	}
+}

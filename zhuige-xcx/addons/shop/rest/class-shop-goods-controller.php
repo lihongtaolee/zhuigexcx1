@@ -16,7 +16,7 @@ class Shop_Goods_Controller extends ZhuiGe_Xcx_Base_Controller
 		parent::__construct();
 		$this->module = 'shop/goods';
 		$this->routes = [
-			'last' => 'get_last',
+			'last' => ['callback' => 'get_last', 'method' => 'GET']
 		];
 	}
 
@@ -25,7 +25,8 @@ class Shop_Goods_Controller extends ZhuiGe_Xcx_Base_Controller
 	 */
 	public function get_last($request)
 	{
-		$offset = $this->param_value($request, 'offset', 0);
+		$offset = $this->param($request, 'offset', 0);
+		$cat_id = $this->param($request, 'cat_id', 0);
 
 		$args = [
 			'post_type' => 'jq_goods',
@@ -34,20 +35,43 @@ class Shop_Goods_Controller extends ZhuiGe_Xcx_Base_Controller
 			'ignore_sticky_posts' => 1,
 		];
 
-		$query = new WP_Query();
-		$result = $query->query($args);
-		$products = [];
-		foreach ($result as $item) {
-			$price = get_post_meta($item->ID, 'zhuige_goods_price', true);
-			$products[] = [
-				'id' => $item->ID,
-				'name' => $item->post_title,
-				'image' => $this->get_one_post_thumbnail($item->ID),
-				'price' => $price ? '¥' . $price : '免费'
+		if ($cat_id) {
+			$args['tax_query'] = [
+				[
+					'taxonomy' => 'jq_goods_cat',
+					'field' => 'term_id',
+					'terms' => [$cat_id]
+				]
 			];
 		}
 
-		return $this->success($products);
+		$query = new WP_Query();
+		$result = $query->query($args);
+		$goods_list = [];
+		foreach ($result as $item) {
+			$price = get_post_meta($item->ID, 'zhuige_goods_price', true);
+			$orig_price = get_post_meta($item->ID, 'zhuige_goods_orig_price', true);
+			$badge = get_post_meta($item->ID, 'zhuige_goods_badge', true);
+
+			$goods_list[] = [
+				'id' => $item->ID,
+				'title' => $item->post_title,
+				'thumbnail' => $this->get_one_post_thumbnail($item->ID),
+				'price' => $price ? $price : '0',
+				'orig_price' => $orig_price ? $orig_price : $price,
+				'badge' => $badge ? $badge : ''
+			];
+		}
+
+		$more = 'nomore';
+		if (count($goods_list) >= 10) {
+			$more = 'more';
+		}
+
+		return $this->success([
+			'list' => $goods_list,
+			'more' => $more
+		]);
 	}
 
 	/**

@@ -44,13 +44,6 @@
 			"style" : {
 				"navigationBarTitleText" : "身高预测AI"
 			}
-		},
-		{
-			"path": "pages/shop/index",
-			"style": {
-				"navigationBarTitleText": "商城首页",
-				"enablePullDownRefresh": true
-			}
 		}
 	],
 	"globalStyle": {
@@ -112,6 +105,12 @@
 	"subPackages": [{
 			"root": "pages/shop",
 			"pages": [{
+				"path": "index",
+				"style": {
+					"navigationBarTitleText": "商城首页",
+					"enablePullDownRefresh": true
+				}
+			}, {
 				"path": "cart",
 				"style": {
 					"navigationBarTitleText": "购物车",

@@ -228,10 +228,13 @@ export default {
 
     loadSetting() {
       uni.request({
-        url: Api.URL('shop', 'setting'),
+        url: Api.URL('shop', 'setting/home'),
         success: (res) => {
           if (res.data && res.data.code === 0) {
             const data = res.data.data;
+            getApp().globalData.appName = data.title;
+            getApp().globalData.appDesc = data.desc;
+
             this.background = data.background;
             this.share_title = data.home_title;
             this.share_thumb = data.thumb;
@@ -240,8 +243,14 @@ export default {
             this.icon_navs = data.icon_navs;
             this.home_rec = data.home_rec;
 
-            this.cats = data.cats;
-            this.cat_id = this.cats[0].id;
+            // 确保cats数组存在且不为空
+            if (data.cats && data.cats.length > 0) {
+              this.cats = data.cats;
+              this.cat_id = this.cats[0].id;
+            } else {
+              this.cats = [];
+              this.cat_id = undefined;
+            }
             
             this.pop_ad = Util.getPopAd(data.pop_ad, Constants.ZHUIGE_INDEX_MAXAD_LAST_TIME);
           }
@@ -266,6 +275,7 @@ export default {
 
       uni.request({
         url: Api.URL('shop', 'goods/last'),
+        method: 'POST',
         data: params,
         success: (res) => {
           if (res.data && res.data.code === 0) {

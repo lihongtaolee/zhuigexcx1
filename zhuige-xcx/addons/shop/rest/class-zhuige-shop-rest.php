@@ -26,25 +26,9 @@ class ZhuiGe_Shop_Rest {
         $order_controller = new Shop_Order_Controller();
         $setting_controller = new Shop_Setting_Controller();
 
-        // 注册商品相关路由
-        register_rest_route('zhuige/shop', '/goods/(?P<action>[a-zA-Z_]+)', array(
-            'methods' => 'GET',
-            'callback' => array($goods_controller, 'handle_request'),
-            'permission_callback' => '__return_true'
-        ));
-
-        // 注册订单相关路由
-        register_rest_route('zhuige/shop', '/order/(?P<action>[a-zA-Z_]+)', array(
-            'methods' => 'GET',
-            'callback' => array($order_controller, 'handle_request'),
-            'permission_callback' => '__return_true'
-        ));
-
-        // 注册设置相关路由
-        register_rest_route('zhuige/shop', '/setting/(?P<action>[a-zA-Z_]+)', array(
-            'methods' => 'GET',
-            'callback' => array($setting_controller, 'handle_request'),
-            'permission_callback' => '__return_true'
-        ));
+        // 注册各控制器的路由
+        $goods_controller->register_routes();
+        $order_controller->register_routes();
+        $setting_controller->register_routes();
     }
 }

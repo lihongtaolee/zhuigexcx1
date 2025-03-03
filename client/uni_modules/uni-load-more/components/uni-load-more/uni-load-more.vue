@@ -171,7 +171,6 @@
 	.uni-load-more__img {
 		width: 24px;
 		height: 24px;
-		// margin-right: 8px;
 	}
 
 	.uni-load-more__img--nvue {
@@ -190,7 +189,7 @@
 		animation: loading-ios 1s 0s linear infinite;
 	}
 
-	@keyframes loading-android {
+	@keyframes loading-ios {
 		0% {
 			transform: rotate(0deg);
 		}

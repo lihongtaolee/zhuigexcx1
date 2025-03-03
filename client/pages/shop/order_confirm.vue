@@ -253,4 +253,123 @@
 		background: #fff;
 		padding: 20rpx;
 		border-radius: 10rpx;
-		mar
+		margin-bottom: 20rpx;
+	}
+
+	.goods-item {
+		display: flex;
+		gap: 20rpx;
+		margin-bottom: 20rpx;
+
+		&:last-child {
+			margin-bottom: 0;
+		}
+	}
+
+	.goods-image {
+		width: 160rpx;
+		height: 160rpx;
+		border-radius: 10rpx;
+	}
+
+	.goods-info {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+	}
+
+	.goods-title {
+		font-size: 28rpx;
+		line-height: 1.4;
+	}
+
+	.goods-price-count {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-end;
+
+		.price {
+			color: #ff4400;
+			font-size: 32rpx;
+		}
+
+		.count {
+			color: #999;
+			font-size: 24rpx;
+		}
+	}
+
+	.order-remark {
+		background: #fff;
+		padding: 20rpx;
+		border-radius: 10rpx;
+		margin-bottom: 20rpx;
+
+		.title {
+			font-size: 28rpx;
+			margin-bottom: 20rpx;
+		}
+
+		textarea {
+			width: 100%;
+			height: 160rpx;
+			font-size: 28rpx;
+		}
+	}
+
+	.pay-type {
+		background: #fff;
+		padding: 20rpx;
+		border-radius: 10rpx;
+		margin-bottom: 20rpx;
+
+		.title {
+			font-size: 28rpx;
+			margin-bottom: 20rpx;
+		}
+
+		.wechat-pay {
+			display: flex;
+			align-items: center;
+			gap: 10rpx;
+			font-size: 28rpx;
+		}
+	}
+
+	.order-footer {
+		position: fixed;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background: #fff;
+		padding: 20rpx;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		border-top: 1rpx solid #eee;
+
+		.goods-count {
+			font-size: 28rpx;
+			color: #666;
+		}
+
+		.order-total {
+			display: flex;
+			align-items: center;
+			gap: 20rpx;
+
+			.total-price {
+				color: #ff4400;
+				font-size: 32rpx;
+			}
+
+			.submit-btn {
+				background: #ff4400;
+				color: #fff;
+				font-size: 28rpx;
+				padding: 20rpx 40rpx;
+				border-radius: 40rpx;
+			}
+		}
+	}

@@ -6,10 +6,21 @@
     "pages/tabs/notice/notice",
     "pages/tabs/mine/mine",
     "pages/sgtool/sgtest/sgtest",
-    "pages/sgtool/sgycai/sgycai",
-    "pages/shop/index"
+    "pages/sgtool/sgycai/sgycai"
   ],
   "subPackages": [
+    {
+      "root": "pages/shop",
+      "pages": [
+        "index",
+        "cart",
+        "category",
+        "detail",
+        "order_confirm",
+        "order_detail",
+        "order_manage"
+      ]
+    },
     {
       "root": "pages/base",
       "pages": [
