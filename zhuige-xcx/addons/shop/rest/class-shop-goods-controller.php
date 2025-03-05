@@ -9,12 +9,12 @@
  * Copyright © 2022-2024 www.zhuige.com All rights reserved.
  */
 
-class Shop_Goods_Controller extends ZhuiGe_Xcx_Base_Controller
+class Shop_Goods_Controller extends Shop_Base_Controller
 {
 	public function __construct()
 	{
 		parent::__construct();
-		$this->module = 'shop/goods';
+		$this->module = 'shop';
 		$this->routes = [
 			'last' => ['callback' => 'get_last', 'method' => 'GET']
 		];
@@ -49,9 +49,11 @@ class Shop_Goods_Controller extends ZhuiGe_Xcx_Base_Controller
 		$result = $query->query($args);
 		$goods_list = [];
 		foreach ($result as $item) {
-			$price = get_post_meta($item->ID, 'zhuige_goods_price', true);
-			$orig_price = get_post_meta($item->ID, 'zhuige_goods_orig_price', true);
-			$badge = get_post_meta($item->ID, 'zhuige_goods_badge', true);
+			// 获取商品元数据
+			$goods_meta = get_post_meta($item->ID, 'zhuige-jq_goods-opt', true);
+			$price = isset($goods_meta['price']) ? $goods_meta['price'] : '0';
+			$orig_price = isset($goods_meta['orig_price']) ? $goods_meta['orig_price'] : $price;
+			$badge = isset($goods_meta['badge']) ? $goods_meta['badge'] : '';
 
 			$goods_list[] = [
 				'id' => $item->ID,
@@ -87,6 +89,6 @@ class Shop_Goods_Controller extends ZhuiGe_Xcx_Base_Controller
 			}
 		}
 
-		return ZhuiGe_Xcx::option_image_url(ZhuiGe_Xcx::option_value('default_thumbnail'), ZHUIGE_XCX_BASE_URL . 'public/images/zhuige.jpg');
+		return ZhuiGe_Xcx::option_image_url(ZhuiGe_Xcx::option_value('default_thumbnail'), 'public/images/zhuige.png');
 	}
 }

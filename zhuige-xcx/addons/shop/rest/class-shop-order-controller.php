@@ -9,20 +9,20 @@
  * Copyright © 2022-2024 www.zhuige.com All rights reserved.
  */
 
-class Shop_Order_Controller extends ZhuiGe_Xcx_Base_Controller
+class Shop_Order_Controller extends Shop_Base_Controller
 {
 	public function __construct()
 	{
 		parent::__construct();
-		$this->module = 'zhuige/shop/order';
+		$this->module = 'shop';
 		$this->routes = [
-			'create' => 'create_order',
-			'list' => 'get_order_list',
-			'detail' => 'get_order_detail',
-			'cancel' => 'cancel_order',
-			'pay' => 'pay_order',
-			'confirm' => 'confirm_order',
-			'delete' => 'delete_order',
+			'create' => ['callback' => 'create_order'],
+			'list' => ['callback' => 'get_order_list'],
+			'detail' => ['callback' => 'get_order_detail'],
+			'cancel' => ['callback' => 'cancel_order'],
+			'pay' => ['callback' => 'pay_order'],
+			'confirm' => ['callback' => 'confirm_order'],
+			'delete' => ['callback' => 'delete_order'],
 		];
 	}
 

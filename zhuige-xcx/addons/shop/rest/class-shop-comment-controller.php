@@ -10,13 +10,13 @@
  * Copyright © 2022-2023 www.zhuige.com All rights reserved.
  */
 
-class ZhuiGe_Shop_Comment_Controller extends ZhuiGe_Shop_Base_Controller
+class Shop_Comment_Controller extends Shop_Base_Controller
 {
 
 	public function __construct()
 	{
 		parent::__construct();
-		$this->module = 'comment';
+		$this->module = 'shop';
 		$this->routes = [
 			'index' => 'comment_index',
 			'add' => 'comment_add',

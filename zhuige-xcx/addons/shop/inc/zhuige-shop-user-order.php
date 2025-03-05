@@ -23,15 +23,41 @@ require dirname(__FILE__) . '/class-zhuige-shop-user-order-list.php';
 add_action('admin_menu', 'zhuige_shop_add_user_order_menu');
 function zhuige_shop_add_user_order_menu()
 {
+	// 添加主菜单
 	add_menu_page(
 		'追格商城订单', 			// Page title.
 		'追格商城订单',        		// Menu title.
 		'activate_plugins',			// Capability.
 		'zhuige_shop_user_order',			// Menu slug.
 		'zhuige_shop_render_user_order',		// Callback function.
-		'dashicons-chart-bar',
+		'dashicons-cart',
 		3
 	);
+
+	// 添加订单管理子菜单
+	add_submenu_page(
+		'zhuige_shop_user_order',			// Parent slug.
+		'订单管理', 			// Page title.
+		'订单管理',        		// Menu title.
+		'activate_plugins',			// Capability.
+		'zhuige_shop_user_order',			// Menu slug.
+		'zhuige_shop_render_user_order'		// Callback function.
+	);
+
+	// 添加订单设置子菜单
+	add_submenu_page(
+		'zhuige_shop_user_order',			// Parent slug.
+		'订单设置', 			// Page title.
+		'订单设置',        		// Menu title.
+		'activate_plugins',			// Capability.
+		'zhuige-shop',			// Menu slug.
+		'zhuige_shop_redirect_order_settings'		// Callback function.
+	);
+
+function zhuige_shop_redirect_order_settings() {
+	wp_redirect(admin_url('admin.php?page=zhuige-xcx#tab=order'));
+	exit;
+}
 }
 
 function zhuige_shop_render_user_order()

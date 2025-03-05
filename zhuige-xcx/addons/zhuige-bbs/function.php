@@ -228,12 +228,14 @@ if (!function_exists('zhuige_bbs_topic_thumb')) {
 		$thumb = '';
 
 		$options = get_post_meta($topic_id, 'zhuige-bbs-topic-option', true);
-		if ($options['type'] == 'image') {
-			if (!empty($options['images'])) {
-				$thumb = $options['images'][0]['image']['url'];
+		if (is_array($options) && isset($options['type'])) {
+			if ($options['type'] == 'image') {
+				if (!empty($options['images']) && is_array($options['images']) && isset($options['images'][0]['image']['url'])) {
+					$thumb = $options['images'][0]['image']['url'];
+				}
+			} else if ($options['type'] == 'video' && isset($options['video_cover']['url'])) {
+				$thumb = $options['video_cover']['url'];
 			}
-		} else if ($options['type'] == 'video') {
-			$thumb = $options['video_cover']['url'];
 		}
 
 		if (empty($thumb)) {

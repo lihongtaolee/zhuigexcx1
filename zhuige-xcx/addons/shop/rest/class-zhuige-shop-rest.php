@@ -11,6 +11,9 @@
 
 class ZhuiGe_Shop_Rest {
     public function __construct() {
+        // 加载基础控制器
+        require_once dirname(__FILE__) . '/class-shop-base-controller.php';
+        
         // 加载商品、订单和设置控制器
         require_once dirname(__FILE__) . '/class-shop-goods-controller.php';
         require_once dirname(__FILE__) . '/class-shop-order-controller.php';

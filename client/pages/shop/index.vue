@@ -228,7 +228,7 @@ export default {
 
     loadSetting() {
       uni.request({
-        url: Api.URL('shop', 'setting/home'),
+        url: Api.URL('shop', ''),
         success: (res) => {
           if (res.data && res.data.code === 0) {
             const data = res.data.data;
@@ -274,7 +274,7 @@ export default {
       }
 
       uni.request({
-        url: Api.URL('shop', 'goods/last'),
+        url: Api.URL('shop', 'last'),
         method: 'POST',
         data: params,
         success: (res) => {

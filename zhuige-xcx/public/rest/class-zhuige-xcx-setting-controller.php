@@ -387,7 +387,12 @@ class ZhuiGe_Xcx_Setting_Controller extends ZhuiGe_Xcx_Base_Controller
 						$items[] = $item;
 					} else if ($post->post_type == 'zhuige_bbs_forum') {
 						$options = get_post_meta($post->ID, 'zhuige-bbs-forum-option', true);
-						$logo = ZhuiGe_Xcx::option_image_url($options['logo'], 'placeholder.jpg');
+						$logo = '';
+						if (is_array($options) && isset($options['logo'])) {
+							$logo = ZhuiGe_Xcx::option_image_url($options['logo'], 'placeholder.jpg');
+						} else {
+							$logo = ZhuiGe_Xcx::option_image_url(null, 'placeholder.jpg');
+						}
 						$user_count = zhuige_bbs_forum_user_count($post->ID);
 						$items[] = [
 							'title' => $post->post_title,
