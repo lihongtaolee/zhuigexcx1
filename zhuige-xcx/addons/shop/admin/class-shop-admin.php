@@ -19,17 +19,27 @@ class Shop_Admin
 	{
 		$this->shop = $shop;
 		$this->version = $version;
-		add_action('add_meta_boxes', array($this, 'setup_goods_metabox'), 11);
+		// 将优先级调整为更高，确保在CSF框架初始化后执行
+		add_action('add_meta_boxes', array($this, 'setup_goods_metabox'), 20);
+		// 添加初始化钩子，确保CSF框架加载
+		add_action('admin_init', array($this, 'admin_init'));
 	}
 
 	public function enqueue_styles()
 	{
-		wp_enqueue_style($this->shop, ZHUIGE_XCX_BASE_URL . 'addons/shop/admin/css/shop-admin.css', array(), $this->version, 'all');
+		wp_enqueue_style($this->shop, ZHUIGE_XCX_BASE_URL . 'addons/shop/admin/css/zhuige-shop-admin.css', array(), $this->version, 'all');
 	}
 
 	public function enqueue_scripts()
 	{
-		wp_enqueue_script($this->shop, ZHUIGE_XCX_BASE_URL . 'addons/shop/admin/js/shop-admin.js', array('jquery'), $this->version, false);
+		wp_enqueue_script($this->shop, ZHUIGE_XCX_BASE_URL . 'addons/shop/admin/js/zhuige-shop-admin.js', array('jquery'), $this->version, false);
+		
+		// 添加调试日志
+		wp_add_inline_script($this->shop, '
+			console.log("CSF Framework Debug:");
+			console.log("Post Type:", window.typenow);
+			console.log("CSF Metaboxes:", window.csf_vars);
+		');
 	}
 
 	public function setup_goods_metabox()
@@ -112,7 +122,7 @@ class Shop_Admin
 			'menu_slug'  => 'zhuige-shop',
 			'menu_position' => 2,
 			'show_bar_menu' => false,
-            'show_sub_menu' => false,
+            'show_sub_menu' => true,
 			'footer_credit' => 'Thank you for creating with <a href="https://www.zhuige.com/" target="_blank">追格</a>',
 			'menu_icon' => 'dashicons-layout',
 		));
