@@ -34,7 +34,6 @@ class Shop_Admin
 	public function enqueue_styles()
 	{
 		wp_enqueue_style($this->shop, ZHUIGE_XCX_BASE_URL . 'addons/shop/admin/css/zhuige-shop-admin.css', array(), $this->version, 'all');
-		wp_enqueue_style($this->shop, ZHUIGE_XCX_BASE_URL . 'addons/shop/admin/css/zhuige-shop-admin.css', array(), $this->version, 'all');
 	}
 
 	public function enqueue_scripts()
@@ -408,7 +407,6 @@ class Shop_Admin
 			'menu_slug'  => 'zhuige-shop',
 			'menu_position' => 2,
 			'show_bar_menu' => false,
-            'show_sub_menu' => true,
             'show_sub_menu' => true,
 			'footer_credit' => 'Thank you for creating with <a href="https://www.zhuige.com/" target="_blank">追格</a>',
 			'menu_icon' => 'dashicons-layout',
