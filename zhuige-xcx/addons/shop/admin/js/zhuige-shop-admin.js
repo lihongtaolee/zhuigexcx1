@@ -1,129 +1,91 @@
 /**
- * 追格商城小程序
- * Author: 追格
- * Help document: https://www.zhuige.com/product/sc.html
- * github: https://github.com/zhuige-com/zhuige_shop
- * gitee: https://gitee.com/zhuige_com/zhuige_shop
- * License：GPL-2.0
- * Copyright © 2022-2023 www.zhuige.com All rights reserved.
+ * 追格小程序 - 商城模块
+ * 作者: 追格
+ * 文档: https://www.zhuige.com/docs/zg.html
+ * gitee: https://gitee.com/zhuige_com/zhuige_xcx
+ * github: https://github.com/zhuige-com/zhuige_xcx
+ * Copyright © 2022-2024 www.zhuige.com All rights reserved.
  */
 
-(function ($) {
+(function($) {
     'use strict';
 
-    $(document).ready(function () {
-        // 商品规格管理
-        $('.add-spec-btn').on('click', function () {
-            var specHtml = '<div class="goods-spec-item">'
-                + '<input type="text" class="spec-name" placeholder="规格名称">'
-                + '<input type="text" class="spec-price" placeholder="价格">'
-                + '<input type="text" class="spec-stock" placeholder="库存">'
-                + '<span class="remove-spec">删除</span>'
-                + '</div>';
-            $('.goods-specs').append(specHtml);
-        });
+    // 调试模式开关 - 设置为false关闭所有调试日志
+    window.zhuigeShopDebug = false;
 
-        $(document).on('click', '.remove-spec', function () {
-            $(this).parent('.goods-spec-item').remove();
-        });
+    // 调试日志函数
+    function logDebug(message) {
+        if (typeof console !== 'undefined' && window.zhuigeShopDebug === true) {
+            console.log('[追格商城调试] ' + message);
+        }
+    }
 
-        // 商品图片管理
-        $('.remove-image').on('click', function () {
-            $(this).parent('.goods-image').remove();
-        });
+    // 错误日志函数
+    function logError(message) {
+        if (typeof console !== 'undefined' && window.zhuigeShopDebug === true) {
+            console.error('[追格商城错误] ' + message);
+        }
+    }
 
-        // 订单状态切换
-        $('.order-status-switch').on('change', function () {
-            var orderId = $(this).data('order-id');
-            var status = $(this).val();
-            $.ajax({
-                url: ajaxurl,
-                type: 'POST',
-                data: {
-                    action: 'zhuige_shop_update_order_status',
-                    order_id: orderId,
-                    status: status
-                },
-                success: function (response) {
-                    if (response.success) {
-                        alert('订单状态更新成功');
-                    } else {
-                        alert('订单状态更新失败');
-                    }
-                }
-            });
-        });
+    // 初始化媒体上传器
+    function initMediaUploader() {
+        // 确保在商品编辑页面且媒体上传API可用
+        if (typeof wp === 'undefined' || typeof wp.media === 'undefined') {
+            return;
+        }
 
-        // 评论管理
-        $('.comment-approve').on('click', function () {
-            var commentId = $(this).data('comment-id');
-            $.ajax({
-                url: ajaxurl,
-                type: 'POST',
-                data: {
-                    action: 'zhuige_shop_approve_comment',
-                    comment_id: commentId
-                },
-                success: function (response) {
-                    if (response.success) {
-                        alert('评论审核成功');
-                        location.reload();
-                    } else {
-                        alert('评论审核失败');
-                    }
-                }
-            });
-        });
+        logDebug('初始化媒体上传器');
 
-        $('.comment-delete').on('click', function () {
-            if (!confirm('确定要删除这条评论吗？')) {
-                return;
+        // 媒体上传器已在PHP中初始化，这里只添加一些额外的功能
+        
+        // 确保幻灯片添加按钮正常工作
+        $('#zhuige-goods-slide-add').on('click', function() {
+            logDebug('添加新幻灯片项');
+        });
+    }
+
+    // 初始化表单验证
+    function initFormValidation() {
+        // 表单提交前验证
+        $('form#post').on('submit', function() {
+            logDebug('表单提交，验证商品数据');
+            
+            // 价格验证
+            var origPrice = parseFloat($('#zhuige_goods_orig_price').val());
+            var price = parseFloat($('#zhuige_goods_price').val());
+            
+            if (isNaN(origPrice) || origPrice <= 0) {
+                $('#zhuige_goods_orig_price').val('1');
             }
-            var commentId = $(this).data('comment-id');
-            $.ajax({
-                url: ajaxurl,
-                type: 'POST',
-                data: {
-                    action: 'zhuige_shop_delete_comment',
-                    comment_id: commentId
-                },
-                success: function (response) {
-                    if (response.success) {
-                        alert('评论删除成功');
-                        location.reload();
-                    } else {
-                        alert('评论删除失败');
-                    }
-                }
-            });
-        });
-
-        // 商品表单验证
-        $('#zhuige-shop-goods-form').on('submit', function (e) {
-            var title = $('#goods-title').val();
-            var price = $('#goods-price').val();
-            var stock = $('#goods-stock').val();
-
-            if (!title) {
-                alert('请输入商品标题');
-                e.preventDefault();
-                return false;
+            
+            if (isNaN(price) || price <= 0) {
+                $('#zhuige_goods_price').val('1');
             }
-
-            if (!price || isNaN(price)) {
-                alert('请输入正确的商品价格');
-                e.preventDefault();
-                return false;
+            
+            // 库存验证
+            var stock = parseInt($('#zhuige_goods_stock').val());
+            if (isNaN(stock) || stock < 0) {
+                $('#zhuige_goods_stock').val('0');
             }
-
-            if (!stock || isNaN(stock)) {
-                alert('请输入正确的商品库存');
-                e.preventDefault();
-                return false;
-            }
-
+            
             return true;
         });
+    }
+
+    // 文档就绪后执行
+    $(document).ready(function() {
+        // 检查是否在商品编辑页面
+        var postType = $('#post_type').val();
+        
+        if (postType === 'jq_goods' || (typeof window.typenow !== 'undefined' && window.typenow === 'jq_goods')) {
+            logDebug('商品编辑页面已加载');
+            
+            // 初始化媒体上传器
+            initMediaUploader();
+            
+            // 初始化表单验证
+            initFormValidation();
+        }
     });
 
 })(jQuery);

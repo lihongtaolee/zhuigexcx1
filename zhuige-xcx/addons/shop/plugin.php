@@ -5,6 +5,11 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit; // 防止直接访问
 }
 
+// 定义常量，防止重复定义
+if (!defined('ZHUIGE_DISABLE_CSF_GOODS_METABOX')) {
+    define('ZHUIGE_DISABLE_CSF_GOODS_METABOX', true);
+}
+
 // 引入 Codestar Framework
 if ( ! class_exists( 'CSF' ) ) {
     require_once plugin_dir_path( __FILE__ ) . '../../admin/codestar-framework/codestar-framework.php';
@@ -42,11 +47,9 @@ class ShopModule {
             add_action('admin_enqueue_scripts', array($this->admin, 'enqueue_styles'));
             add_action('admin_enqueue_scripts', array($this->admin, 'enqueue_scripts'));
             add_action('admin_menu', array($this->admin, 'create_menu'));
-            add_action('admin_init', array($this->admin, 'admin_init'));
             add_action('admin_menu', array($this->admin, 'admin_menu'), 20);
             
-            // 确保商品属性设置在商品类型注册后执行
-            add_action('init', array($this->admin, 'setup_goods_metabox'), 20);
+            // 注意：setup_goods_metabox 已经在 Shop_Admin 构造函数中注册了钩子，这里不需要重复注册
         }
         
         // 加载REST API
@@ -56,5 +59,7 @@ class ShopModule {
         }
     }
 }
+
+error_log( "【商城模块】shop/plugin.php 已成功加载" );
 
 return new ShopModule();

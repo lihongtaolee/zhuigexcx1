@@ -54,10 +54,19 @@ function zhuige_shop_add_user_order_menu()
 		'zhuige_shop_redirect_order_settings'		// Callback function.
 	);
 
-function zhuige_shop_redirect_order_settings() {
-	wp_redirect(admin_url('admin.php?page=zhuige-xcx#tab=order'));
-	exit;
 }
+
+function zhuige_shop_redirect_order_settings() {
+    error_log('Redirecting to order settings page');
+    error_log('Current page: ' . $_SERVER['REQUEST_URI']);
+    
+    // 防止重定向循环
+    if (strpos($_SERVER['REQUEST_URI'], 'page=zhuige-shop') !== false) {
+        return;
+    }
+    
+    wp_redirect(admin_url('admin.php?page=zhuige-shop'));
+    exit;
 }
 
 function zhuige_shop_render_user_order()
