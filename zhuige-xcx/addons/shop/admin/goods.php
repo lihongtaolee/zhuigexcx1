@@ -9,8 +9,11 @@
  * Copyright © 2022-2024 www.zhuige.com All rights reserved.
  */
 
+// 注意：商品属性元数据面板已改为手动创建方式，不再使用CSF框架
+// 相关代码请查看 class-shop-admin.php 中的 setup_goods_metabox 和 render_goods_metabox 方法
+
 //
-// 商品页
+// 商品页 - 评论设置
 //
 CSF::createSection($prefix, array(
     'id' => 'goods',

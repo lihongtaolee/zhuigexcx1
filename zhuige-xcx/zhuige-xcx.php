@@ -14,6 +14,9 @@ if (!defined('WPINC')) {
     die;
 }
 
+// 定义常量，表明商品属性元数据面板使用手动创建方式，不使用CSF框架
+define('ZHUIGE_DISABLE_CSF_GOODS_METABOX', true);
+
 define('ZHUIGE_XCX', 'zhuige-xcx');
 define('ZHUIGE_XCX_VERSION', '2.5.8');
 define('ZHUIGE_XCX_BASE_NAME', plugin_basename(__FILE__));

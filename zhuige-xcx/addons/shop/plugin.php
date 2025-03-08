@@ -5,10 +5,8 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit; // 防止直接访问
 }
 
-// 定义常量，防止重复定义
-if (!defined('ZHUIGE_DISABLE_CSF_GOODS_METABOX')) {
-    define('ZHUIGE_DISABLE_CSF_GOODS_METABOX', true);
-}
+// 定义常量，表明商品属性元数据面板使用手动创建方式，不使用CSF框架
+define('ZHUIGE_DISABLE_CSF_GOODS_METABOX', true);
 
 // 引入 Codestar Framework
 if ( ! class_exists( 'CSF' ) ) {
@@ -20,8 +18,11 @@ error_log( "【商城模块】plugin.php 已加载" );
 // 在后台加载 CSF 配置页面，CSF 将自动注册选项页面和菜单
 if ( is_admin() ) {
     require_once plugin_dir_path( __FILE__ ) . 'admin/home.php';
-    require_once plugin_dir_path( __FILE__ ) . 'admin/goods.php';
+    require_once plugin_dir_path( __FILE__ ) . 'admin/goods.php'; // 注意：此文件中已移除CSF创建商品元数据面板的代码
     require_once plugin_dir_path( __FILE__ ) . 'inc/zhuige-shop-user-order.php';
+} else {
+    // 在前台也需要加载home.php，确保REST API接口注册
+    require_once plugin_dir_path( __FILE__ ) . 'admin/home.php';
 }
 
 // 引入商品类型定义
@@ -49,7 +50,7 @@ class ShopModule {
             add_action('admin_menu', array($this->admin, 'create_menu'));
             add_action('admin_menu', array($this->admin, 'admin_menu'), 20);
             
-            // 注意：setup_goods_metabox 已经在 Shop_Admin 构造函数中注册了钩子，这里不需要重复注册
+            // 注意：商品属性元数据面板已在 Shop_Admin 构造函数中注册，使用手动创建方式
         }
         
         // 加载REST API

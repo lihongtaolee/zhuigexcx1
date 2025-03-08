@@ -10,21 +10,13 @@
 (function($) {
     'use strict';
 
-    // 调试模式开关 - 设置为false关闭所有调试日志
-    window.zhuigeShopDebug = false;
-
-    // 调试日志函数
+    // 完全禁用所有日志输出
     function logDebug(message) {
-        if (typeof console !== 'undefined' && window.zhuigeShopDebug === true) {
-            console.log('[追格商城调试] ' + message);
-        }
+        // 不执行任何操作，完全禁用日志
     }
 
-    // 错误日志函数
     function logError(message) {
-        if (typeof console !== 'undefined' && window.zhuigeShopDebug === true) {
-            console.error('[追格商城错误] ' + message);
-        }
+        // 不执行任何操作，完全禁用错误日志
     }
 
     // 初始化媒体上传器
@@ -34,13 +26,9 @@
             return;
         }
 
-        logDebug('初始化媒体上传器');
-
-        // 媒体上传器已在PHP中初始化，这里只添加一些额外的功能
-        
         // 确保幻灯片添加按钮正常工作
         $('#zhuige-goods-slide-add').on('click', function() {
-            logDebug('添加新幻灯片项');
+            // 添加幻灯片功能已在PHP中实现
         });
     }
 
@@ -48,8 +36,6 @@
     function initFormValidation() {
         // 表单提交前验证
         $('form#post').on('submit', function() {
-            logDebug('表单提交，验证商品数据');
-            
             // 价格验证
             var origPrice = parseFloat($('#zhuige_goods_orig_price').val());
             var price = parseFloat($('#zhuige_goods_price').val());
@@ -78,8 +64,6 @@
         var postType = $('#post_type').val();
         
         if (postType === 'jq_goods' || (typeof window.typenow !== 'undefined' && window.typenow === 'jq_goods')) {
-            logDebug('商品编辑页面已加载');
-            
             // 初始化媒体上传器
             initMediaUploader();
             
@@ -87,5 +71,16 @@
             initFormValidation();
         }
     });
+
+    // 清除任何可能存在的全局变量或定时器
+    if (window.zhuigeShopMetaboxTimer) {
+        clearTimeout(window.zhuigeShopMetaboxTimer);
+        window.zhuigeShopMetaboxTimer = null;
+    }
+    
+    // 禁用任何可能的循环检查函数
+    window.showMetabox = function() { /* 空函数，防止循环调用 */ };
+    window.checkMetabox = function() { /* 空函数，防止循环调用 */ };
+    window.zhuigeShopDebug = false;
 
 })(jQuery);

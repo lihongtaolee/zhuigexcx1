@@ -46,7 +46,23 @@ class Shop_Admin
 			wp_enqueue_media();
 		}
 		
-		wp_enqueue_script($this->shop, ZHUIGE_XCX_BASE_URL . 'addons/shop/admin/js/zhuige-shop-admin.js', array('jquery'), $this->version, false);
+		// 添加版本号参数，确保浏览器不使用缓存的脚本
+		$version = $this->version . '.' . time();
+		wp_enqueue_script($this->shop, ZHUIGE_XCX_BASE_URL . 'addons/shop/admin/js/zhuige-shop-admin.js', array('jquery'), $version, true);
+		
+		// 添加内联脚本，清除任何可能的循环检查
+		wp_add_inline_script($this->shop, '
+			// 清除任何可能存在的定时器
+			if (window.zhuigeShopMetaboxTimer) {
+				clearTimeout(window.zhuigeShopMetaboxTimer);
+				window.zhuigeShopMetaboxTimer = null;
+			}
+			
+			// 禁用任何可能的循环检查函数
+			window.showMetabox = function() { /* 空函数，防止循环调用 */ };
+			window.checkMetabox = function() { /* 空函数，防止循环调用 */ };
+			window.zhuigeShopDebug = false;
+		');
 	}
 
 	public function setup_goods_metabox()

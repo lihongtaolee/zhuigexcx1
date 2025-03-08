@@ -2,13 +2,20 @@
   <view class="content" :style="background ? 'background: url(' + background + ') no-repeat top; background-size: 100% auto;' : ''">
     <uni-nav-bar :title="title" :color="nav_color" :background-color="nav_bgcolor" :border="false" :fixed="true" :statusBar="true" :placeholder="false">
       <!-- 顶部小搜索框 -->
-      <view slot="left" @click="clickLink('/pages/shop/search/search')">
+      <view slot="right" @click="clickLink('/pages/shop/search/search')">
         <view class="zhuige-nav-search">
           <uni-icons type="search" size="20" :color="nav_color"></uni-icons>
           <text :style="{color:nav_color}">关键词...</text>
         </view>
       </view>
     </uni-nav-bar>
+    
+    <!-- 调试信息，可以在正式环境中移除 -->
+    <view class="zhuige-debug-info" v-if="false">
+      <text>数据加载状态: {{loaded ? '已加载' : '加载中'}}</text>
+      <text>商品数量: {{goods_list.length}}</text>
+      <text>推荐商品: {{home_rec ? (home_rec.posts ? home_rec.posts.length : 0) : 0}}个</text>
+    </view>
 
     <view class="zhuige-main-top">
       <!-- 大图轮播 -->
@@ -33,17 +40,26 @@
     </view>
 
     <!-- 滑动推荐 -->
-    <view v-if="home_rec" class="zhuige-recom">
+    <view v-if="home_rec && home_rec.posts && home_rec.posts.length>0" class="zhuige-recom">
       <view class="zhuige-title">
-        <view>{{home_rec.title}}</view>
+        <view>{{home_rec.title || '推荐商品'}}</view>
         <text>滑动查看</text>
       </view>
-      <view v-if="home_rec.posts && home_rec.posts.length>0" class="zhuige-scroll">
+      <view class="zhuige-scroll">
         <scroll-view scroll-x="true">
           <view v-for="(post,index) in home_rec.posts" :key="index"
             @click="clickLink('/pages/shop/detail/detail?goods_id=' + post.id)" class="zhuige-scroll-block">
-            <image :src="post.thumbnail" mode="aspectFill"></image>
+            <image :src="getGoodsThumbnail(post)" mode="aspectFill"></image>
             <view>{{post.title}}</view>
+            <view class="zhuige-goods-price" v-if="post.price !== undefined">
+              <view class="promotion">
+                <text>￥</text>
+                <text>{{post.price}}</text>
+              </view>
+              <view class="original" v-if="post.orig_price !== undefined">
+                <text>￥{{post.orig_price}}</text>
+              </view>
+            </view>
           </view>
         </scroll-view>
       </view>
@@ -70,18 +86,18 @@
         <view class="zhuige-goods-list">
           <view v-for="(item,index) in goods_list" :key="index"
             @click="clickLink('/pages/shop/detail/detail?goods_id=' + item.id)" class="zhuige-goods">
-            <image :src="item.thumbnail" mode="aspectFill"></image>
+            <image :src="getGoodsThumbnail(item)" mode="aspectFill"></image>
             <view class="zhuige-goods-text">
               <view class="zhuige-goods-title">
                 <text v-if="item.badge" class="mark">{{item.badge}}</text>
                 <text>{{item.title}}</text>
               </view>
-              <view class="zhuige-goods-price">
+              <view class="zhuige-goods-price" v-if="item.price !== undefined">
                 <view class="promotion">
                   <text>￥</text>
                   <text>{{item.price}}</text>
                 </view>
-                <view class="original">
+                <view class="original" v-if="item.orig_price !== undefined">
                   <text>￥{{item.orig_price}}</text>
                 </view>
               </view>
@@ -154,6 +170,12 @@ export default {
   },
 
   onLoad() {
+    // 清除旧数据，确保页面刷新时重新加载
+    this.goods_list = [];
+    this.loaded = false;
+    this.loadMore = 'more';
+    
+    // 加载设置和商品数据
     this.loadSetting();
     this.loadGoods();
   },
@@ -209,6 +231,46 @@ export default {
     },
 
     clickLink(link) {
+      // 检查链接是否有效
+      if (!link || link === '#' || link === 'javascript:;') {
+        uni.showToast({
+          title: '该功能暂未开放',
+          icon: 'none'
+        });
+        return;
+      }
+      
+      // 直接处理搜索页面和商品详情页面的跳转，避免使用通用的openLink
+      if (link === '/pages/shop/search/search') {
+        uni.navigateTo({
+          url: link,
+          fail: (res) => {
+            console.error('搜索页面跳转失败:', res);
+            uni.showToast({
+              title: '搜索功能暂未开放',
+              icon: 'none'
+            });
+          }
+        });
+        return;
+      }
+      
+      // 处理商品详情页面
+      if (link.indexOf('/pages/shop/detail/detail') === 0) {
+        uni.navigateTo({
+          url: link,
+          fail: (res) => {
+            console.error('商品详情页面跳转失败:', res);
+            uni.showToast({
+              title: '商品详情暂未开放',
+              icon: 'none'
+            });
+          }
+        });
+        return;
+      }
+      
+      // 其他链接使用通用处理
       Util.openLink(link);
     },
 
@@ -227,9 +289,23 @@ export default {
     },
 
     loadSetting() {
+      // 添加调试日志
+      console.log('开始加载商城设置');
+      
+      // 显示加载中提示
+      uni.showLoading({
+        title: '加载中...'
+      });
+      
+      // 添加时间戳参数，强制不使用缓存（正确的URL参数格式）
+      const timestamp = new Date().getTime();
+      
       uni.request({
-        url: Api.URL('shop', ''),
+        url: Api.URL('shop', '') + '?_t=' + timestamp, // 修正URL格式，使用?而不是&
         success: (res) => {
+          // 添加调试日志
+          console.log('商城设置接口返回数据:', res.data);
+          
           if (res.data && res.data.code === 0) {
             const data = res.data.data;
             getApp().globalData.appName = data.title;
@@ -239,9 +315,33 @@ export default {
             this.share_title = data.home_title;
             this.share_thumb = data.thumb;
 
-            this.slides = data.slides;
-            this.icon_navs = data.icon_navs;
-            this.home_rec = data.home_rec;
+            // 记录原始数据，便于调试
+            console.log('幻灯片数据:', data.slides);
+            console.log('导航项数据:', data.icon_navs);
+            console.log('推荐商品数据:', data.home_rec);
+            console.log('分类数据:', data.cats);
+
+            this.slides = data.slides || [];
+            this.icon_navs = data.icon_navs || [];
+            
+            // 处理推荐商品数据 - 直接使用现有数据，不再请求额外接口
+            if (data.home_rec && data.home_rec.posts) {
+              // 确保每个商品都有必要的字段
+              data.home_rec.posts = data.home_rec.posts.map(post => ({
+                ...post,
+                price: post.price !== undefined ? post.price : '',
+                orig_price: post.orig_price !== undefined ? post.orig_price : '',
+                badge: post.badge !== undefined ? post.badge : ''
+              }));
+              this.home_rec = data.home_rec;
+              console.log('处理后的推荐商品数据:', this.home_rec);
+            } else {
+              this.home_rec = {
+                title: '推荐商品',
+                posts: []
+              };
+              console.log('未找到推荐商品数据，使用默认值');
+            }
 
             // 确保cats数组存在且不为空
             if (data.cats && data.cats.length > 0) {
@@ -253,8 +353,28 @@ export default {
             }
             
             this.pop_ad = Util.getPopAd(data.pop_ad, Constants.ZHUIGE_INDEX_MAXAD_LAST_TIME);
+          } else {
+            console.error('加载商城设置失败:', res.data);
+            
+            // 显示错误提示
+            uni.showToast({
+              title: '加载商城设置失败',
+              icon: 'none'
+            });
           }
           uni.stopPullDownRefresh();
+          uni.hideLoading();
+        },
+        fail: (err) => {
+          console.error('请求商城设置接口失败:', err);
+          uni.stopPullDownRefresh();
+          uni.hideLoading();
+          
+          // 显示错误提示
+          uni.showToast({
+            title: '网络请求失败',
+            icon: 'none'
+          });
         }
       });
     },
@@ -265,24 +385,95 @@ export default {
       }
       this.loadMore = 'loading';
 
+      // 显示加载中提示
+      if (!this.goods_list.length) {
+        uni.showLoading({
+          title: '加载中...'
+        });
+      }
+
+      // 添加时间戳参数，强制不使用缓存
+      const timestamp = new Date().getTime();
+      
       let params = {
-        offset: this.goods_list.length
+        offset: this.goods_list.length,
+        _t: timestamp // 添加时间戳防止缓存
       };
 
       if (this.cat_id) {
         params.cat_id = this.cat_id;
       }
 
+      // 添加调试日志
+      console.log('请求商品列表参数:', params);
+
       uni.request({
         url: Api.URL('shop', 'last'),
-        method: 'POST',
+        method: 'GET', // 使用GET请求，与后端接口一致
         data: params,
         success: (res) => {
+          // 添加调试日志
+          console.log('商品列表接口返回数据:', res.data);
+          
           if (res.data && res.data.code === 0) {
-            this.goods_list = this.goods_list.concat(res.data.data.list);
+            // 确保返回的商品列表数据有效
+            const goodsList = res.data.data.list || [];
+            
+            // 添加调试日志
+            console.log('处理前的商品列表:', goodsList);
+            
+            // 直接处理商品数据，不再请求额外接口
+            const processedList = goodsList.map(item => {
+              // 确保基本字段存在
+              return {
+                ...item,
+                // 如果没有thumbnail字段，尝试从其他字段获取
+                thumbnail: item.thumbnail || (item.featured_image ? item.featured_image : null),
+                // 确保价格字段存在
+                price: item.price !== undefined ? item.price : '',
+                orig_price: item.orig_price !== undefined ? item.orig_price : '',
+                // 确保角标字段存在
+                badge: item.badge !== undefined ? item.badge : '',
+                // 处理幻灯片数据
+                slide: item.slide || []
+              };
+            });
+            
+            console.log('处理后的商品列表:', processedList);
+            
+            // 强制刷新数据，确保视图更新
+            if (this.goods_list.length === 0) {
+              this.goods_list = processedList;
+            } else {
+              this.goods_list = [...this.goods_list, ...processedList];
+            }
+            
             this.loadMore = res.data.data.more;
             this.loaded = true;
+          } else {
+            console.error('加载商品列表失败:', res.data);
+            this.loadMore = 'noMore';
+            this.loaded = true;
+            
+            // 显示错误提示
+            uni.showToast({
+              title: '加载商品列表失败',
+              icon: 'none'
+            });
           }
+          uni.hideLoading();
+        },
+        fail: (err) => {
+          console.error('请求商品列表接口失败:', err);
+          this.loadMore = 'noMore';
+          this.loaded = true;
+          uni.hideLoading();
+          
+          // 显示错误提示
+          uni.showToast({
+            title: '网络请求失败',
+            icon: 'none'
+          });
         }
       });
     },
@@ -296,6 +487,34 @@ export default {
     clickPopAdClose() {
       this.pop_ad = false;
       uni.setStorageSync(Constants.ZHUIGE_INDEX_MAXAD_LAST_TIME, new Date().getTime())
+    },
+
+    getGoodsThumbnail(item) {
+      // 如果有缩略图且不是默认图片，直接使用
+      if (item.thumbnail && !item.thumbnail.includes('zhuige-xcx/public/images')) {
+        return item.thumbnail;
+      }
+      
+      // 如果有幻灯片，使用第一张幻灯片图片
+      if (item.slide && Array.isArray(item.slide) && item.slide.length > 0) {
+        // 处理不同的幻灯片数据格式
+        const firstSlide = item.slide[0];
+        if (firstSlide.image && firstSlide.image.url) {
+          return firstSlide.image.url;
+        } else if (firstSlide.image && typeof firstSlide.image === 'string') {
+          return firstSlide.image;
+        } else if (typeof firstSlide === 'string') {
+          return firstSlide;
+        }
+      }
+      
+      // 如果有特色图片，使用特色图片
+      if (item.featured_image) {
+        return item.featured_image;
+      }
+      
+      // 使用内置的默认图片
+      return '/static/404.png';
     },
   }
 }
@@ -315,6 +534,7 @@ export default {
   background: rgba(255, 255, 255, .3);
   border-radius: 30rpx;
   padding: 0 20rpx;
+  height: 60rpx;
 }
 
 .zhuige-nav-search text {
@@ -326,6 +546,7 @@ export default {
   position: relative;
   width: 100%;
   height: 400rpx;
+  margin-top: 20rpx;
 }
 
 .zhuige-swiper swiper {
@@ -425,6 +646,21 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.zhuige-scroll-block .zhuige-goods-price {
+  display: flex;
+  align-items: center;
+  margin-top: 5rpx;
+}
+
+/* 调试信息样式 */
+.zhuige-debug-info {
+  background: rgba(0,0,0,0.5);
+  color: #fff;
+  padding: 10rpx;
+  font-size: 24rpx;
+  display: none; /* 默认隐藏 */
 }
 
 .zhuige-goods-group {
