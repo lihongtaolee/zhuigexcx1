@@ -6,7 +6,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // 定义常量，表明商品属性元数据面板使用手动创建方式，不使用CSF框架
-define('ZHUIGE_DISABLE_CSF_GOODS_METABOX', true);
+if (!defined('ZHUIGE_DISABLE_CSF_GOODS_METABOX')) {
+    define('ZHUIGE_DISABLE_CSF_GOODS_METABOX', true);
+}
 
 // 引入 Codestar Framework
 if ( ! class_exists( 'CSF' ) ) {

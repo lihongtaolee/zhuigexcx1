@@ -219,6 +219,9 @@ function zhuige_shop_register_routes() {
     ));
 }
 
+// 确保在WordPress初始化时注册REST API路由
+add_action('rest_api_init', 'zhuige_shop_register_routes');
+
 /**
  * 商城首页接口回调函数
  */

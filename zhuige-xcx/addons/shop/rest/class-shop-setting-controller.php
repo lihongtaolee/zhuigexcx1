@@ -22,7 +22,7 @@ class Shop_Setting_Controller extends Shop_Base_Controller
 			'logout'=> ['callback' => 'get_logout', 'method' => 'GET'],
 			'search'=> ['callback' => 'get_search', 'method' => 'GET'],
 			'index' => ['callback' => 'get_home', 'method' => 'GET'],
-			'last'  => ['callback' => 'get_last', 'method' => 'POST']
+			'last'  => ['callback' => 'get_last', 'method' => 'GET']
 		];
 	}
 

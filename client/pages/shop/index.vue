@@ -48,7 +48,7 @@
       <view class="zhuige-scroll">
         <scroll-view scroll-x="true">
           <view v-for="(post,index) in home_rec.posts" :key="index"
-            @click="clickLink('/pages/shop/detail/detail?goods_id=' + post.id)" class="zhuige-scroll-block">
+            @click="clickLink('/pages/shop/detail?goods_id=' + post.id)" class="zhuige-scroll-block">
             <image :src="getGoodsThumbnail(post)" mode="aspectFill"></image>
             <view>{{post.title}}</view>
             <view class="zhuige-goods-price" v-if="post.price !== undefined">
@@ -85,7 +85,7 @@
       <template v-if="goods_list.length>0">
         <view class="zhuige-goods-list">
           <view v-for="(item,index) in goods_list" :key="index"
-            @click="clickLink('/pages/shop/detail/detail?goods_id=' + item.id)" class="zhuige-goods">
+            @click="clickLink('/pages/shop/detail?goods_id=' + item.id)" class="zhuige-goods">
             <image :src="getGoodsThumbnail(item)" mode="aspectFill"></image>
             <view class="zhuige-goods-text">
               <view class="zhuige-goods-title">
@@ -297,11 +297,12 @@ export default {
         title: '加载中...'
       });
       
-      // 添加时间戳参数，强制不使用缓存（正确的URL参数格式）
+      // 添加时间戳参数，强制不使用缓存
       const timestamp = new Date().getTime();
       
       uni.request({
-        url: Api.URL('shop', '') + '?_t=' + timestamp, // 修正URL格式，使用?而不是&
+        url: Api.URL('shop', ''),
+        method: 'GET',
         success: (res) => {
           // 添加调试日志
           console.log('商城设置接口返回数据:', res.data);
@@ -353,6 +354,9 @@ export default {
             }
             
             this.pop_ad = Util.getPopAd(data.pop_ad, Constants.ZHUIGE_INDEX_MAXAD_LAST_TIME);
+            
+            // 设置加载完成标志
+            this.loaded = true;
           } else {
             console.error('加载商城设置失败:', res.data);
             
@@ -361,6 +365,9 @@ export default {
               title: '加载商城设置失败',
               icon: 'none'
             });
+            
+            // 即使加载失败也设置加载完成标志
+            this.loaded = true;
           }
           uni.stopPullDownRefresh();
           uni.hideLoading();
@@ -375,6 +382,9 @@ export default {
             title: '网络请求失败',
             icon: 'none'
           });
+          
+          // 即使请求失败也设置加载完成标志
+          this.loaded = true;
         }
       });
     },
@@ -409,7 +419,7 @@ export default {
 
       uni.request({
         url: Api.URL('shop', 'last'),
-        method: 'GET', // 使用GET请求，与后端接口一致
+        method: 'GET',
         data: params,
         success: (res) => {
           // 添加调试日志
